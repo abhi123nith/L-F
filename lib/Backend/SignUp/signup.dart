@@ -69,7 +69,7 @@ class _SignUpPageState extends State<SignUpPage> {
         );
 
         User? user = userCredential.user;
-        final userProfilePicUrl = user?.photoURL ?? 'assets/nith_logo.png';
+        const userProfilePicUrl = 'https://avatar.iran.liara.run/public/24';
 
         // Send verification email
         if (user != null && !user.emailVerified) {
@@ -177,25 +177,8 @@ class _SignUpPageState extends State<SignUpPage> {
                             const SizedBox(height: 16),
 
                             // Email Field
-                            TextFormField(
-                              controller: _emailController,
-                              decoration: InputDecoration(
-                                filled: true,
-                                fillColor: Colors.white.withOpacity(0.2),
-                                labelText: 'Email',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                labelStyle:
-                                    const TextStyle(color: Colors.black),
-                              ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter your email';
-                                }
-                                return null;
-                              },
-                            ),
+                            _buildTextFormField(
+                                emailController: _emailController),
                             const SizedBox(height: 16),
                             TextFormField(
                               controller: _phoneController,
@@ -394,9 +377,9 @@ class _SignUpPageState extends State<SignUpPage> {
                                 labelStyle:
                                     const TextStyle(color: Colors.black),
                               ),
-                              items: (_selectedGender == 'Male'
-                                      ? boyshostelsList
-                                      : girlshostelsList)
+                              items: (_selectedGender == 'Female'
+                                      ? girlshostelsList
+                                      : boyshostelsList)
                                   .map((String hostel) {
                                 return DropdownMenuItem<String>(
                                   value: hostel,
@@ -452,14 +435,14 @@ class _SignUpPageState extends State<SignUpPage> {
                                 children: [
                                   Text(
                                     'Already have an account? ',
-                                    style:  TextStyle(
+                                    style: TextStyle(
                                         color: Colors.black,
                                         fontWeight: FontWeight.bold),
                                   ),
                                   Text(
                                     'Sign In ',
                                     style: TextStyle(
-                                      decoration: TextDecoration.underline,
+                                        decoration: TextDecoration.underline,
                                         color: Colors.black,
                                         fontWeight: FontWeight.bold),
                                   ),
@@ -474,6 +457,37 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
               ),
             ),
+    );
+  }
+}
+
+class _buildTextFormField extends StatelessWidget {
+  const _buildTextFormField({
+    super.key,
+    required TextEditingController emailController,
+  }) : _emailController = emailController;
+
+  final TextEditingController _emailController;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      controller: _emailController,
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: Colors.white.withOpacity(0.2),
+        labelText: 'Email',
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        labelStyle: const TextStyle(color: Colors.black),
+      ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter your email';
+        }
+        return null;
+      },
     );
   }
 }

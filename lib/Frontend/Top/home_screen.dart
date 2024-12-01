@@ -22,24 +22,45 @@ class HomePage extends StatelessWidget {
               children: [
                 // NIT Hamirpur logo
                 Image.asset(
-                  'assets/logo.png',
-                  height: 40.0,
-                  width: 40.0,
+                  'assets/lg.png', // Ensure the image path is correct
+                  height: 75, // Adjust height as needed
+                  width: 75, // Adjust width as needed
                 ),
                 const SizedBox(width: 6),
-                // Website name "LOST&Found"
-                const Text(
-                  "LOST&Found",
-                  style: TextStyle(
-                    fontSize: 24.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
               ],
             ),
             actions: isMobile
-                ? null
+                ? [
+                    GestureDetector(
+                      child: Card(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(7),
+                            side: const BorderSide(
+                                width: 2, color: Colors.white)),
+                        color: Colors.deepOrange,
+                        child: const Padding(
+                          padding: EdgeInsets.all(1.0),
+                          child: Icon(Icons.add, size: 22),
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => const CreatePostPage()));
+                      },
+                    ),
+                    const SizedBox(width: 10),
+                    IconButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => MessagesPage()));
+                        },
+                        icon: const Icon(Icons.messenger_outline_rounded)),
+                    const SizedBox(width: 10),
+                  ]
                 : [
                     ResponsiveButton(
                       label: "Home",
@@ -87,11 +108,15 @@ class HomePage extends StatelessWidget {
           drawer: isMobile ? _buildDrawer(context) : null,
           body: isMobile
               ? const Center(child: LostFoundPage())
-              : const Expanded(
-                  flex: 5,
-                  child: Center(
-                    child: LostFoundPage(),
-                  ),
+              : const Column(
+                  children: [
+                    Expanded(
+                      flex: 5,
+                      child: Center(
+                        child: LostFoundPage(),
+                      ),
+                    ),
+                  ],
                 ),
         );
       },
@@ -143,22 +168,25 @@ class HomePage extends StatelessWidget {
       data: MediaQuery.of(context)
           .copyWith(textScaler: const TextScaler.linear(1.0)),
       child: Drawer(
-        child: ListView(
+        child: Column(
           children: [
-            DrawerHeader(
+            // Header with logo
+
+            const SizedBox(height: 40),
+            Container(
               decoration: const BoxDecoration(
                 color: Colors.deepOrange,
               ),
               child: Row(
                 children: [
                   Image.asset(
-                    'assets/logo.png',
-                    height: 40.0,
-                    width: 40.0,
+                    'assets/logo2.png',
+                    height: 80.0,
+                    width: 80.0,
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 8), // Spacing between logo and text
                   const Text(
-                    'LOST&Found',
+                    'CampusTracker',
                     style: TextStyle(
                       fontSize: 24.0,
                       fontWeight: FontWeight.bold,
@@ -168,38 +196,72 @@ class HomePage extends StatelessWidget {
                 ],
               ),
             ),
-            ListTile(
-              title: const Text("Home"),
-              onTap: () {
-                Navigator.pop(context);
-              },
+            const SizedBox(height: 0), // Space between header and list items
+            // Drawer menu items
+            Expanded(
+              child: ListView(
+                children: [
+                  ListTile(
+                    title: const Text("Home"),
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  ListTile(
+                    title: const Text("New Post"),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const CreatePostPage()));
+                    },
+                  ),
+                  ListTile(
+                    title: const Text("My List"),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (_) => MessagesPage()));
+                    },
+                  ),
+                  ListTile(
+                    title: const Text("Profile"),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const ProfilePage()));
+                    },
+                  ),
+                ],
+              ),
             ),
-            ListTile(
-              title: const Text("New Post"),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (_) => const CreatePostPage()));
-              },
-            ),
-            ListTile(
-              title: const Text("My List"),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                    context, MaterialPageRoute(builder: (_) => MessagesPage()));
-              },
-            ),
-            ListTile(
-              title: const Text("Profile"),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (_) => const ProfilePage()));
-              },
-            ),
-            ListTile(
-              title: const Text("Logout"),
+
+            // Spacer pushes the Logout button to the bottom
+            GestureDetector(
+              child: Container(
+                color: Colors.deepOrange,
+                padding: const EdgeInsets.all(10),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Logout",
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white),
+                    ),
+                    SizedBox(width: 10),
+                    Icon(
+                      Icons.logout,
+                      color: Colors.white,
+                    ),
+                  ],
+                ),
+              ),
               onTap: () {
                 Navigator.pop(context);
                 _showLogoutDialog(context);

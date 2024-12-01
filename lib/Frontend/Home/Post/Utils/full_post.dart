@@ -66,8 +66,7 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('posts')
-            .where('postmakerId', isEqualTo: user!.uid)
-            .orderBy('timestamp', descending: true)
+            .where('postId', isEqualTo: widget.postId)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -106,7 +105,7 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
                 profileImageUrl: userDetails['profileImage'] ?? '',
                 postTime: _formatDate(data['timestamp']),
                 itemImages: List<String>.from(
-                    data['imageUrls'] ?? ['assets/nith_logo.png']),
+                    data['imageUrls'] ?? ['']),
                 status: data['status'] ?? '',
                 title: data['item'] ?? '',
                 location: data['location'] ?? '',

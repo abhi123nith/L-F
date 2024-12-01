@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:l_f/Frontend/Home/Post/Utils/full_post.dart';
 import 'package:l_f/Frontend/Profile/user_see_page.dart';
 
@@ -67,18 +71,22 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
             MaterialPageRoute(
                 builder: (_) => ProfilePage2(uid: widget.otherUserId)));
       },
-      child: ListTile(
-        leading: CircleAvatar(
-          radius: 30,
-          backgroundImage: profileImage.isNotEmpty
-              ? NetworkImage(profileImage)
-              : const NetworkImage(
-                      'https://firebasestorage.googleapis.com/v0/b/lostfound-fe03f.appspot.com/o/images%2F1728657135536_0.jpg?alt=media&token=179c07c7-bf27-4d65-b762-618f0a4e660e')
-                  as ImageProvider,
+      child: Card(
+        elevation: 2,
+        child: ListTile(
+          leading: CircleAvatar(
+            radius: 30,
+            backgroundImage: profileImage.isNotEmpty
+                ? NetworkImage(profileImage)
+                : const NetworkImage(
+                        'https://firebasestorage.googleapis.com/v0/b/lostfound-fe03f.appspot.com/o/images%2F1728657135536_0.jpg?alt=media&token=179c07c7-bf27-4d65-b762-618f0a4e660e')
+                    as ImageProvider,
+          ),
+          title:
+              Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
+          subtitle: const Text(
+              'Online'), // You can fetch and display actual online status if available
         ),
-        title: Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: const Text(
-            'Online'), // You can fetch and display actual online status if available
       ),
     );
   }
@@ -234,8 +242,13 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
       padding: const EdgeInsets.all(8.0),
       child: Row(
         children: [
+          // Button to pick image or video
+          IconButton(
+            icon: const Icon(Icons.photo),
+            onPressed: _pickImageOrVideo,
+          ),
           Expanded(
-            child: TextField(
+            child: TextFormField(
               controller: _messageController,
               decoration: const InputDecoration(
                 labelText: 'Type your message...',
@@ -246,15 +259,51 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           ),
           IconButton(
             icon: const Icon(Icons.send),
-            onPressed: _sendMessage,
+            onPressed: () {
+              _sendMessage(_messageController.toString());
+            },
           ),
         ],
       ),
     );
   }
 
-  void _sendMessage() async {
-    String message = _messageController.text.trim();
+  Future<void> _pickImageOrVideo() async {
+    final picker = ImagePicker();
+    final XFile? pickedFile = await picker.pickImage(
+      source: ImageSource.gallery,
+      // for video, you can use picker.pickVideo() or pick from both
+    );
+
+    if (pickedFile != null) {
+      File file = File(pickedFile.path);
+      String fileUrl = await _uploadFile(file);
+
+      // Send the message with media URL
+      _sendMessageWithMedia(fileUrl, 'image'); // 'image' or 'video'
+    }
+  }
+
+  Future<String> _uploadFile(File file) async {
+    try {
+      // Upload the selected image or video to Firebase Storage
+      String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+      Reference storageRef =
+          FirebaseStorage.instance.ref().child('chats/$fileName');
+
+      UploadTask uploadTask = storageRef.putFile(file);
+      TaskSnapshot taskSnapshot = await uploadTask;
+
+      String fileUrl = await taskSnapshot.ref.getDownloadURL();
+      return fileUrl;
+    } catch (e) {
+      print("Error uploading file: $e");
+      return '';
+    }
+  }
+
+  void _sendMessage(String message) async {
+    message = _messageController.text.trim();
     if (message.isNotEmpty) {
       try {
         await FirebaseFirestore.instance.collection('chats').add({
@@ -263,7 +312,36 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           'participants': [currentUser!.uid, widget.otherUserId],
           'message': message,
           'timestamp': Timestamp.now(),
-          'postId': ''
+          'postId': '',
+          'mediaUrl': '', // Add a field for media URL
+          'mediaType': '', // 'image' or 'video' to distinguish media type
+        });
+        _messageController.clear();
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to send message: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+// Send message with media (image/video URL)
+  void _sendMessageWithMedia(String fileUrl, String mediaType) async {
+    String message = _messageController.text.trim();
+    if (message.isNotEmpty || fileUrl.isNotEmpty) {
+      try {
+        await FirebaseFirestore.instance.collection('chats').add({
+          'senderId': currentUser!.uid,
+          'receiverId': widget.otherUserId,
+          'participants': [currentUser!.uid, widget.otherUserId],
+          'message': message,
+          'timestamp': Timestamp.now(),
+          'postId': '',
+          'mediaUrl': fileUrl, // Store media URL
+          'mediaType': mediaType, // 'image' or 'video'
         });
         _messageController.clear();
       } catch (e) {

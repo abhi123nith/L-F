@@ -65,7 +65,7 @@ class _ProfilePage2State extends State<ProfilePage2> {
   Future<bool> _canShowPhoneNumber() async {
     // Replace 'claimCollection' with the actual name of your collection
     QuerySnapshot claims = await FirebaseFirestore.instance
-        .collection('claims')
+        .collection('posts')
         .where('postClaimer', isEqualTo: widget.uid)
         .where('isClaimed', isEqualTo: true)
         .get();

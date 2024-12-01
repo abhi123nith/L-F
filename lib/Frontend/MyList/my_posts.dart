@@ -108,7 +108,7 @@ class _MyPostsPageState extends State<MyPostsPage> {
                 profileImageUrl: userDetails['profileImage'] ?? '',
                 postTime: _formatDate(data['timestamp']),
                 itemImages: List<String>.from(
-                    data['imageUrls'] ?? ['assets/nith_logo.png']),
+                    data['imageUrls'] ?? ['']),
                 status: data['status'] ?? '',
                 title: data['item'] ?? '',
                 location: data['location'] ?? '',

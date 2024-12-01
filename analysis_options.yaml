@@ -10,6 +10,7 @@
 analyzer:
   errors:
     avoid_print: ignore
+    camel_case_types: ignore
     library_private_types_in_public_api: ignore
     unused_element: ignore
     unused_field: ignore

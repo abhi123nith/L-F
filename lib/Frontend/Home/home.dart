@@ -121,138 +121,154 @@ class _LostFoundPageState extends State<LostFoundPage> {
         .snapshots();
   }
 
- void _applyFilters() {
-  // Start with the collection reference
-  Query query = FirebaseFirestore.instance.collection('posts');
+  void _applyFilters() {
+    // Start with the collection reference
+    Query query = FirebaseFirestore.instance.collection('posts');
 
-  // Apply Type filter (Lost/Found)
-  if (selectedType != 'All') {
-    query = query.where('status', isEqualTo: selectedType);
+    // Apply Type filter (Lost/Found)
+    if (selectedType != 'All') {
+      query = query.where('status', isEqualTo: selectedType);
+    }
+
+    // Apply Location filter
+    if (selectedLocation != 'Campus, NITH') {
+      query = query.where('location', isEqualTo: selectedLocation);
+    }
+
+    // Apply Item Category filter
+    if (selectedCategory != 'All') {
+      query = query.where('item', isEqualTo: selectedCategory);
+    }
+
+    // Apply Date filter (based on upload timestamp)
+    DateTime now = DateTime.now();
+    DateTime? startDate;
+
+    switch (selectedDateRange) {
+      case 'Today':
+        startDate = DateTime(now.year, now.month, now.day);
+        break;
+      case 'This Week':
+        startDate = now.subtract(Duration(days: now.weekday - 1));
+        break;
+      case 'This Month':
+        startDate = DateTime(now.year, now.month, 1);
+        break;
+      case 'This Year':
+        startDate = DateTime(now.year, 1, 1);
+        break;
+      default:
+        startDate = null;
+    }
+
+    if (startDate != null) {
+      query = query.where('timestamp', isGreaterThanOrEqualTo: startDate);
+    }
+
+    // Update the stream for the StreamBuilder
+    setState(() {
+      _postStream = query.orderBy('timestamp', descending: true).snapshots();
+    });
   }
-
-  // Apply Location filter
-  if (selectedLocation != 'Campus, NITH') {
-    query = query.where('location', isEqualTo: selectedLocation);
-  }
-
-  // Apply Item Category filter
-  if (selectedCategory != 'All') {
-    query = query.where('item', isEqualTo: selectedCategory);
-  }
-
-  // Apply Date filter (based on upload timestamp)
-  DateTime now = DateTime.now();
-  DateTime? startDate;
-
-  switch (selectedDateRange) {
-    case 'Today':
-      startDate = DateTime(now.year, now.month, now.day);
-      break;
-    case 'This Week':
-      startDate = now.subtract(Duration(days: now.weekday - 1));
-      break;
-    case 'This Month':
-      startDate = DateTime(now.year, now.month, 1);
-      break;
-    case 'This Year':
-      startDate = DateTime(now.year, 1, 1);
-      break;
-    default:
-      startDate = null;
-  }
-
-  if (startDate != null) {
-    query = query.where('timestamp', isGreaterThanOrEqualTo: startDate);
-  }
-
-  // Update the stream for the StreamBuilder
-  setState(() {
-    _postStream = query.orderBy('timestamp', descending: true).snapshots();
-  });
-}
-
 
   String selectedType = 'All';
   String selectedLocation = 'Campus, NITH';
   String selectedCategory = 'All';
   String selectedDateRange = 'All Time';
 
+  
+
 // Dummy lists for dropdowns (replace with your provided lists)
   List<String> itemTypes = ['All', 'Lost', 'Found'];
   List<String> locations = locationsList;
-  List<String> categories  = [
-  'All','Mobile Phone','Laptop','Charger','Wallet','ID Card','Hoodie','Jacket/Coat','Bat','Electronics Item','Cloth','Belt','Ball','Book','Earphones','Earbuds',
-  'Water Bottle','Watch', 'Specs','Jewellry', 'Shoes', 'Keys', 'Umbrella', 'Other'
-];
-  List<String> dateRanges = ['All Time','Today','This Week','This Month','This Year'];
+  List<String> categories = [
+    'All',
+    'Mobile Phone',
+    'Laptop',
+    'Charger',
+    'Wallet',
+    'ID Card',
+    'Hoodie',
+    'Jacket/Coat',
+    'Bat',
+    'Electronics Item',
+    'Cloth',
+    'Belt',
+    'Ball',
+    'Book',
+    'Earphones',
+    'Earbuds',
+    'Water Bottle',
+    'Watch',
+    'Specs',
+    'Jewellry',
+    'Shoes',
+    'Keys',
+    'Umbrella',
+    'Other'
+  ];
+  List<String> dateRanges = [
+    'All Time',
+    'Today',
+    'This Week',
+    'This Month',
+    'This Year'
+  ];
 
 // Filter Dropdowns
   Widget buildDropdowns() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        DropdownButton<String>(
-          value: selectedType,
-          items: itemTypes.map((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(value),
-            );
-          }).toList(),
-          onChanged: (String? newValue) {
-            setState(() {
-              selectedType = newValue!;
-            });
-            _applyFilters();
-          },
+    return LayoutBuilder(builder: (context, constraints) {
+      return Padding(
+        padding: const EdgeInsets.symmetric( horizontal: 12.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            buildDropdown(selectedType, itemTypes, (newValue) {
+              setState(() {
+                selectedType = newValue!;
+              });
+              _applyFilters();
+            }),
+            const SizedBox(width: 10),
+            buildDropdown(selectedLocation, locations, (newValue) {
+              setState(() {
+                selectedLocation = newValue!;
+              });
+              _applyFilters();
+            }),
+            const SizedBox(width: 10),
+            buildDropdown(selectedCategory, categories, (newValue) {
+              setState(() {
+                selectedCategory = newValue!;
+              });
+              _applyFilters();
+            }),
+            const SizedBox(width: 10),
+            buildDropdown(selectedDateRange, dateRanges, (newValue) {
+              setState(() {
+                selectedDateRange = newValue!;
+              });
+              _applyFilters();
+            }),
+          ],
         ),
-        DropdownButton<String>(
-          value: selectedLocation,
-          items: locations.map((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(value),
-            );
-          }).toList(),
-          onChanged: (String? newValue) {
-            setState(() {
-              selectedLocation = newValue!;
-            });
-            _applyFilters();
-          },
-        ),
-        DropdownButton<String>(
-          value: selectedCategory,
-          items: categories.map((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(value),
-            );
-          }).toList(),
-          onChanged: (String? newValue) {
-            setState(() {
-              selectedCategory = newValue!;
-            });
-            _applyFilters();
-          },
-        ),
-        DropdownButton<String>(
-          value: selectedDateRange,
-          items: dateRanges.map((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(value),
-            );
-          }).toList(),
-          onChanged: (String? newValue) {
-            setState(() {
-              selectedDateRange = newValue!;
-            });
-            _applyFilters();
-          },
-        ),
-      ],
+      );
+    });
+  }
+
+// Helper method to create a DropdownButton
+  Widget buildDropdown(String selectedValue, List<String> items,
+      ValueChanged<String?> onChanged) {
+    return DropdownButton<String>(
+      value: selectedValue,
+      items: items.map((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+        );
+      }).toList(),
+      onChanged: onChanged,
     );
   }
 
@@ -262,14 +278,11 @@ class _LostFoundPageState extends State<LostFoundPage> {
     return Scaffold(
       body: Column(
         children: [
-          buildDropdowns(),
+          SingleChildScrollView(
+              scrollDirection: Axis.horizontal, child: buildDropdowns()),
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
               stream: _postStream,
-              //  FirebaseFirestore.instance
-              //     .collection('posts')
-              //     .orderBy('timestamp', descending: true)
-              //     .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
@@ -280,7 +293,8 @@ class _LostFoundPageState extends State<LostFoundPage> {
                 }
 
                 if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return const Center(child: Text('No posts available'));
+                  return const Center(
+                      child: Center(child: Text('No posts available')));
                 }
 
                 final posts = snapshot.data!.docs.map((doc) {
@@ -301,16 +315,15 @@ class _LostFoundPageState extends State<LostFoundPage> {
                       final claimerDetails =
                           await _fetchUserNameAndProfilePic(claimerUid);
                       postClaimerName = claimerDetails['name'] ?? 'NITH User';
-                      postClaimerProfilePic =
-                          claimerDetails['profileImage'] ?? '';
+                      postClaimerProfilePic = claimerDetails['profileImage']!;
                     }
 
                     return PostModel(
                       userName: userDetails['name'] ?? 'NITH User',
-                      profileImageUrl: userDetails['profileImage'] ?? '',
+                      profileImageUrl: userDetails['profileImage'] ??
+                          'https://static.wikia.nocookie.net/logopedia/images/e/ec/220px-National_Institute_of_Technology,_Hamirpur_Logo.png/revision/latest?cb=20200330143312',
                       postTime: _formatDate(data['timestamp']),
-                      itemImages: List<String>.from(
-                          data['imageUrls'] ?? ['assets/nith_logo.png']),
+                      itemImages: List<String>.from(data['imageUrls'] ?? ''),
                       status: data['status'] ?? '',
                       title: data['item'] ?? '',
                       location: data['location'] ?? '',
@@ -367,6 +380,8 @@ class _LostFoundPageState extends State<LostFoundPage> {
                                     // Header  of the POST (profiel,name.location,delete)
                                     GestureDetector(
                                       onTap: () {
+                                        print(
+                                            'EROROR ::: ${post.profileImageUrl}');
                                         Navigator.push(
                                             context,
                                             MaterialPageRoute(

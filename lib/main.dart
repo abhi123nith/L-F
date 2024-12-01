@@ -2,29 +2,35 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:google_api_availability/google_api_availability.dart';
 import 'package:l_f/Backend/Login/login.dart';
 import 'package:l_f/Frontend/Top/home_screen.dart';
 import 'package:l_f/firebase_options.dart';
-import 'package:permission_handler/permission_handler.dart';
-
-
-Future<void> requestPermissions() async {
-  if (kIsWeb) {
-    // Skip permission requests on web
-    print('Web platform detected, skipping permission request.');
-  } else {
-    // Request permissions for mobile platforms
-    PermissionStatus status = await Permission.location.request();
-    print('Permission status: $status');
-  }
-}
-
 
 void main() async {
   BindingBase.debugZoneErrorsAreFatal = true;
   WidgetsFlutterBinding.ensureInitialized();
 
-  await requestPermissions();
+  Future<void> checkGooglePlayServices() async {
+    GooglePlayServicesAvailability availability = await GoogleApiAvailability
+        .instance
+        .checkGooglePlayServicesAvailability();
+
+    switch (availability) {
+      case GooglePlayServicesAvailability.success:
+        print('Google Play Services is available');
+        break;
+      case GooglePlayServicesAvailability.serviceMissing:
+      case GooglePlayServicesAvailability.serviceVersionUpdateRequired:
+      case GooglePlayServicesAvailability.serviceDisabled:
+        // Show a message to the user or prompt them to update Google Play Services
+        print('Google Play Services needs to be updated or enabled');
+        break;
+      default:
+        print('Google Play Services status: $availability');
+        break;
+    }
+  }
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -40,7 +46,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Lost and Found',
+      title: 'CampusTracker',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,

@@ -97,6 +97,10 @@ class _MessagesPageState extends State<MessagesPage>
               return const Center(child: CircularProgressIndicator());
             }
 
+            if (sentSnapshot.data!.docs.isEmpty) {
+              return const Center(child: Text('No Messags available'));
+            }
+
             var sentMessages = sentSnapshot.data?.docs ?? [];
             var receivedMessages = receivedSnapshot.data?.docs ?? [];
 
@@ -294,6 +298,7 @@ class _MessagesPageState extends State<MessagesPage>
 
                 var claims = claimSnapshot.data!.docs;
                 print("SENT DATA ::: $claims");
+
                 return Column(
                   children: claims.map((claim) {
                     var claimResponse = claim['answer'];
@@ -349,11 +354,11 @@ class _MessagesPageState extends State<MessagesPage>
                                           fontWeight: FontWeight.bold),
                                     ),
                                     Text(
-                                      claimStatus == 'requested'
-                                          ? ' Requested'
+                                      post['claimStatus'] == 'accepted'
+                                          ? 'Accepted'
                                           : claimStatus == 'declined'
                                               ? ' Declined'
-                                              : ' Accepted',
+                                              : 'Requested ',
                                       style: const TextStyle(
                                           fontWeight: FontWeight.bold),
                                     ),
