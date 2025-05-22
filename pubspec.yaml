@@ -47,6 +47,7 @@ dependencies:
   get: ^4.6.6
   permission_handler: ^11.3.1
   google_api_availability: ^5.0.0
+  shimmer: ^3.0.0
   
 
 dev_dependencies:

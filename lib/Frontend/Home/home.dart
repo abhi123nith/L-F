@@ -176,8 +176,6 @@ class _LostFoundPageState extends State<LostFoundPage> {
   String selectedCategory = 'All';
   String selectedDateRange = 'All Time';
 
-  
-
 // Dummy lists for dropdowns (replace with your provided lists)
   List<String> itemTypes = ['All', 'Lost', 'Found'];
   List<String> locations = locationsList;
@@ -219,7 +217,7 @@ class _LostFoundPageState extends State<LostFoundPage> {
   Widget buildDropdowns() {
     return LayoutBuilder(builder: (context, constraints) {
       return Padding(
-        padding: const EdgeInsets.symmetric( horizontal: 12.0),
+        padding: const EdgeInsets.symmetric(horizontal: 12.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
@@ -437,41 +435,21 @@ class _LostFoundPageState extends State<LostFoundPage> {
                                         CarouselSlider(
                                           options: CarouselOptions(
                                             autoPlay: true,
-                                            height: 500.0,
+                                            height: 450.0,
                                             enlargeCenterPage: true,
                                           ),
                                           items: post.itemImages
                                               .map<Widget>((imageUrl) {
                                             return GestureDetector(
                                               onTap: () {
-                                                showDialog(
-                                                  context: context,
-                                                  builder:
-                                                      (BuildContext context) {
-                                                    return Dialog(
-                                                      child: Stack(
-                                                        children: [
-                                                          Image.network(
-                                                              imageUrl),
-                                                          Positioned(
-                                                            right: 10,
-                                                            top: 10,
-                                                            child: IconButton(
-                                                              icon: const Icon(
-                                                                  Icons.cancel,
-                                                                  color: Colors
-                                                                      .red),
-                                                              onPressed: () {
-                                                                Navigator.of(
-                                                                        context)
-                                                                    .pop();
-                                                              },
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    );
-                                                  },
+                                                // Open image viewer when the image is tapped
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        FullScreenImageViewer(
+                                                            post.itemImages,isMobile),
+                                                  ),
                                                 );
                                               },
                                               child: ClipRRect(
@@ -1195,6 +1173,63 @@ class _LostFoundPageState extends State<LostFoundPage> {
           ),
         );
       },
+    );
+  }
+}
+
+class FullScreenImageViewer extends StatefulWidget {
+  final List<String> images;
+  bool isMobile;
+   FullScreenImageViewer(this.images, this.isMobile,{super.key});
+
+  @override
+  _FullScreenImageViewerState createState() => _FullScreenImageViewerState();
+}
+
+class _FullScreenImageViewerState extends State<FullScreenImageViewer> {
+  int _currentIndex = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor:
+          Colors.black.withOpacity(0.8), // Background color for overlay
+      body: Stack(
+        children: [
+          PageView.builder(
+            itemCount: widget.images.length,
+            controller: PageController(initialPage: _currentIndex),
+            onPageChanged: (index) {
+              setState(() {
+                _currentIndex = index;
+              });
+            },
+            itemBuilder: (context, index) {
+              return Center(
+                child: Image.network(
+                  width:widget.isMobile ? MediaQuery.of(context).size.width:MediaQuery.of(context).size.width*0.5,
+                  widget.images[index],
+                  fit: BoxFit.contain,
+                ),
+              );
+            },
+          ),
+          Positioned(
+            top: 40,
+            right: 20,
+            child: IconButton(
+              icon: const Icon(
+                Icons.close,
+                color: Colors.white,
+                size: 30,
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

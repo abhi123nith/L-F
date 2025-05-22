@@ -12,23 +12,37 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        bool isMobile = constraints.maxWidth < 600;
+        bool isMobile = constraints.maxWidth < 700;
 
         return Scaffold(
           appBar: AppBar(
             backgroundColor: Colors.deepOrange,
             foregroundColor: Colors.white,
-            title: Row(
-              children: [
-                // NIT Hamirpur logo
-                Image.asset(
-                  'assets/lg.png', // Ensure the image path is correct
-                  height: 75, // Adjust height as needed
-                  width: 75, // Adjust width as needed
-                ),
-                const SizedBox(width: 6),
-              ],
-            ),
+            title: isMobile
+                ? Row(
+                    children: [
+                      // App logo
+                      Image.asset(
+                        'assets/lg.png', // Ensure the image path is correct
+                        height: 75, // Adjust height as needed
+                        width: 75, // Adjust width as needed
+                      ),
+                      const SizedBox(width: 6),
+                    ],
+                  )
+                : Row(
+                    children: [
+                      const SizedBox(width: 16),
+                      // NIT Hamirpur logo
+                      Image.asset(
+                        'assets/lg.png', // Ensure the image path is correct
+                        height: 75, // Adjust height as needed
+                        width: 75, // Adjust width as needed
+                      ),
+                      const SizedBox(width: 16),
+                      const Text("CampusTracker"),
+                    ],
+                  ),
             actions: isMobile
                 ? [
                     GestureDetector(
@@ -82,6 +96,13 @@ class HomePage extends StatelessWidget {
                     ),
                     ResponsiveButton(
                       label: "My List",
+                      onPressed: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (_) => MessagesPage()));
+                      },
+                    ),
+                      ResponsiveButton(
+                      label: "My Chats",
                       onPressed: () {
                         Navigator.push(context,
                             MaterialPageRoute(builder: (_) => MessagesPage()));

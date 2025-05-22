@@ -83,7 +83,7 @@ class _MessagesPageState extends State<MessagesPage>
       builder: (context, receivedSnapshot) {
         // Show loading indicator if the first snapshot is still loading
         if (receivedSnapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: ShimmerSkeleton());
         }
 
         // Fetch sent messages by the current user
@@ -94,7 +94,7 @@ class _MessagesPageState extends State<MessagesPage>
               .snapshots(),
           builder: (context, sentSnapshot) {
             if (sentSnapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
+              return const Center(child: ShimmerSkeleton());
             }
 
             if (sentSnapshot.data!.docs.isEmpty) {
@@ -147,12 +147,7 @@ class _MessagesPageState extends State<MessagesPage>
                     // While the user profile is loading, show a placeholder
                     if (userSnapshot.connectionState ==
                         ConnectionState.waiting) {
-                      return const SizedBox(
-                        height: 60, // Adjust height as needed
-                        child: ListTile(
-                          title: Text('Loading...'),
-                        ),
-                      );
+                      return const ShimmerSkeleton();
                     }
 
                     // If user data is available, show the message
@@ -263,7 +258,7 @@ class _MessagesPageState extends State<MessagesPage>
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: ShimmerSkeleton());
         }
         if (snapshot.data!.docs.isEmpty) {
           return const Center(child: Text('No Sent Claims available'));
@@ -288,7 +283,7 @@ class _MessagesPageState extends State<MessagesPage>
                 if (!claimSnapshot.hasData) {
                   return const Center(
                       child: SizedBox(
-                          child: Center(child: CircularProgressIndicator())));
+                          child: Center(child: ShimmerSkeleton())));
                 }
 
                 if (claimSnapshot.hasError) {
@@ -398,7 +393,7 @@ class _MessagesPageState extends State<MessagesPage>
       builder: (context, snapshot) {
         // Show a single CircularProgressIndicator while the posts are loading
         if (!snapshot.hasData) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: ShimmerSkeleton());
         }
 
         // If no posts are available, show the no data message
@@ -431,7 +426,7 @@ class _MessagesPageState extends State<MessagesPage>
                 if (!claimSnapshot.hasData) {
                   return const Center(
                       child:
-                          CircularProgressIndicator()); // Avoid showing loading indicator per post
+                          ShimmerSkeleton()); // Avoid showing loading indicator per post
                 }
 
                 var claims = claimSnapshot.data!.docs;

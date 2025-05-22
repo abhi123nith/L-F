@@ -7,6 +7,30 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:l_f/Frontend/Home/Post/Utils/full_post.dart';
 import 'package:l_f/Frontend/Profile/user_see_page.dart';
+import 'package:shimmer/shimmer.dart';
+
+class ShimmerSkeleton extends StatelessWidget {
+  const ShimmerSkeleton({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: Container(
+        margin: const EdgeInsets.all(15),
+        height: 80,
+        width: MediaQuery.of(context).size.width * 0.8,
+        decoration: BoxDecoration(
+          color: Colors.grey[300],
+          borderRadius: const BorderRadius.all(Radius.circular(8)),
+        ),
+      ),
+    );
+  }
+}
 
 class ChatDetailPage extends StatefulWidget {
   final String otherUserId;
@@ -36,7 +60,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
             .get(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: ShimmerSkeleton());
           }
 
           if (snapshot.hasError) {
@@ -85,7 +109,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           title:
               Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
           subtitle: const Text(
-              'Online'), // You can fetch and display actual online status if available
+              '...'), // You can fetch and display actual online status if available
         ),
       ),
     );
@@ -100,7 +124,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: ShimmerSkeleton());
         }
 
         if (snapshot.hasError) {
@@ -128,27 +152,41 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           itemCount: messages.length,
           itemBuilder: (context, index) {
             var message = messages[index];
-            var postId = message['postId'];
-            var isSentByUser = message['senderId'] == currentUser!.uid;
-            var messageText = message['message'];
-            var timestamp = (message['timestamp'] as Timestamp).toDate();
+            var data = message.data() as Map<String, dynamic>;
 
-            // Check if postId exists
-            if (postId != null && postId.isNotEmpty) {
+            final postId = data['postId'] ?? '';
+            final isSentByUser = data['senderId'] == currentUser!.uid;
+            final messageText = data['message'] ?? '';
+            final timestamp = (data['timestamp'] as Timestamp).toDate();
+            final mediaUrl = data['mediaUrl'] ?? '';
+            final mediaType = data['mediaType'] ?? '';
+
+            // Timestamp string
+            final formattedTime =
+                '${timestamp.hour.toString().padLeft(2, '0')}:${timestamp.minute.toString().padLeft(2, '0')} - ${timestamp.day}/${timestamp.month}/${timestamp.year}';
+
+            // Show message with associated post
+            if (postId.isNotEmpty) {
               return FutureBuilder<DocumentSnapshot>(
                 future: FirebaseFirestore.instance
                     .collection('posts')
                     .doc(postId)
                     .get(),
                 builder: (context, postSnapshot) {
-                  if (!postSnapshot.hasData) {
-                    return const Center(child: CircularProgressIndicator());
+                  if (postSnapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: ShimmerSkeleton());
                   }
 
-                  var postData = postSnapshot.data!;
-                  var itemName = postData['item'] ?? 'Unknown';
-                  var description = postData['description'] ?? 'No description';
-                  var type = postData['location'] ?? 'Unknown';
+                  if (!postSnapshot.hasData || !postSnapshot.data!.exists) {
+                    return const SizedBox
+                        .shrink(); // Hide if post doesn't exist
+                  }
+
+                  final postData = postSnapshot.data!;
+                  final itemName = postData['item'] ?? 'Unknown';
+                  final description =
+                      postData['description'] ?? 'No description';
+                  final location = postData['location'] ?? 'Unknown';
 
                   return GestureDetector(
                     onTap: () {
@@ -160,39 +198,44 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                       );
                     },
                     child: Card(
-                      color: isSentByUser ? Colors.blue[100] : Colors.grey[300],
+                      color: isSentByUser ? Colors.blue[50] : Colors.grey[200],
                       margin: const EdgeInsets.symmetric(
-                          vertical: 5, horizontal: 10),
+                          vertical: 6, horizontal: 12),
                       child: Padding(
-                        padding: const EdgeInsets.all(10.0),
+                        padding: const EdgeInsets.all(12),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              'Item: $itemName',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
-                            const SizedBox(height: 5),
+                            Text('Item: $itemName',
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 16)),
+                            const SizedBox(height: 4),
                             Text('Description: $description'),
-                            const SizedBox(height: 5),
-                            Text('Location: $type'),
+                            const SizedBox(height: 4),
+                            Text('Location: $location'),
                             const SizedBox(height: 10),
+                            if (mediaUrl.isNotEmpty && mediaType == 'image')
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.network(mediaUrl, height: 150),
+                              ),
+                            if (messageText.isNotEmpty) ...[
+                              const SizedBox(height: 10),
+                              Text('Reply: $messageText'),
+                            ],
+                            const SizedBox(height: 8),
                             Align(
                               alignment: isSentByUser
                                   ? Alignment.centerLeft
                                   : Alignment.centerRight,
                               child: Text(
-                                '${timestamp.hour}:${timestamp.minute}, ${timestamp.day}/${timestamp.month}/${timestamp.year}',
+                                formattedTime,
                                 style: const TextStyle(
                                   fontSize: 12,
                                   color: Colors.grey,
                                 ),
                               ),
                             ),
-                            Text('Reply: $messageText'),
                           ],
                         ),
                       ),
@@ -202,31 +245,79 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
               );
             }
 
-            // If postId is null, show regular message
-            return ListTile(
-              title: Align(
-                alignment:
-                    isSentByUser ? Alignment.centerRight : Alignment.centerLeft,
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: isSentByUser ? Colors.blue[200] : Colors.grey[300],
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    messageText,
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                ),
-              ),
-              subtitle: Align(
-                alignment:
-                    isSentByUser ? Alignment.centerRight : Alignment.centerLeft,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 5),
-                  child: Text(
-                    '${timestamp.hour}:${timestamp.minute}, ${timestamp.day}/${timestamp.month}/${timestamp.year}',
-                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+            // Show normal message (without post)
+            return GestureDetector(
+              onLongPress: isSentByUser
+                  ? () {
+                      showModalBottomSheet(
+                        context: context,
+                        builder: (context) => Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            ListTile(
+                              leading: const Icon(Icons.edit),
+                              title: const Text('Edit'),
+                              onTap: () {
+                                Navigator.pop(context);
+                                _showEditMessageDialog(message.id, messageText);
+                              },
+                            ),
+                            ListTile(
+                              leading: const Icon(Icons.delete),
+                              title: const Text('Delete'),
+                              onTap: () {
+                                Navigator.pop(context);
+                                _deleteMessage(message.id, mediaUrl);
+                              },
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                  : null,
+              child: ListTile(
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                title: Align(
+                  alignment: isSentByUser
+                      ? Alignment.centerRight
+                      : Alignment.centerLeft,
+                  child: Column(
+                    crossAxisAlignment: isSentByUser
+                        ? CrossAxisAlignment.end
+                        : CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: isSentByUser
+                              ? Colors.blue[200]
+                              : Colors.grey[300],
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (mediaUrl.isNotEmpty && mediaType == 'image')
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.network(mediaUrl, height: 150),
+                              ),
+                            if (messageText.isNotEmpty)
+                              Text(
+                                messageText,
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        formattedTime,
+                        style:
+                            const TextStyle(fontSize: 12, color: Colors.grey),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -235,6 +326,65 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         );
       },
     );
+  }
+
+  void _showEditMessageDialog(String messageId, String oldText) {
+    final TextEditingController editController =
+        TextEditingController(text: oldText);
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Edit Message"),
+          content: TextField(
+            controller: editController,
+            maxLines: null,
+            decoration: const InputDecoration(hintText: "Enter new message"),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () async {
+                String updatedText = editController.text.trim();
+                if (updatedText.isNotEmpty) {
+                  await FirebaseFirestore.instance
+                      .collection('chats')
+                      .doc(messageId)
+                      .update({'message': updatedText});
+                }
+                Navigator.pop(context);
+              },
+              child: const Text("Save"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _deleteMessage(String messageId, String mediaUrl) async {
+    try {
+      // Delete media from storage if exists
+      if (mediaUrl.isNotEmpty) {
+        try {
+          await FirebaseStorage.instance.refFromURL(mediaUrl).delete();
+        } catch (e) {
+          print("Error deleting media: $e");
+        }
+      }
+
+      // Delete Firestore document
+      await FirebaseFirestore.instance
+          .collection('chats')
+          .doc(messageId)
+          .delete();
+    } catch (e) {
+      print("Error deleting message: $e");
+    }
   }
 
   Widget _buildMessageInputSection() {
@@ -260,7 +410,9 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           IconButton(
             icon: const Icon(Icons.send),
             onPressed: () {
-              _sendMessage(_messageController.toString());
+              _sendMessage(_messageController.text.trim());
+
+              // _sendMessage(_messageController.toString());
             },
           ),
         ],
@@ -303,7 +455,6 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   }
 
   void _sendMessage(String message) async {
-    message = _messageController.text.trim();
     if (message.isNotEmpty) {
       try {
         await FirebaseFirestore.instance.collection('chats').add({
@@ -313,8 +464,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           'message': message,
           'timestamp': Timestamp.now(),
           'postId': '',
-          'mediaUrl': '', // Add a field for media URL
-          'mediaType': '', // 'image' or 'video' to distinguish media type
+          'mediaUrl': '',
+          'mediaType': '',
         });
         _messageController.clear();
       } catch (e) {

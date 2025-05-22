@@ -1,0 +1,46 @@
+{
+    "sourceFile": "lib/Frontend/Home/Post/skelton.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 7,
+            "patches": [
+                {
+                    "date": 1747558604567,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1747558630253,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,11 +1,9 @@\n import 'package:shimmer/shimmer.dart';\n import 'package:flutter/material.dart';\n \n class ShimmerSkeleton extends StatelessWidget {\n-  final double height;\n-  final double width;\n-  final BorderRadius borderRadius;\n+ \n \n   const ShimmerSkeleton({\n     Key? key,\n     required this.height,\n"
+                },
+                {
+                    "date": 1747558635783,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,15 +1,10 @@\n+import 'package:flutter/material.dart';\n import 'package:shimmer/shimmer.dart';\n-import 'package:flutter/material.dart';\n \n class ShimmerSkeleton extends StatelessWidget {\n- \n-\n   const ShimmerSkeleton({\n     Key? key,\n-    required this.height,\n-    required this.width,\n-    this.borderRadius = const BorderRadius.all(Radius.circular(8)),\n   }) : super(key: key);\n \n   @override\n   Widget build(BuildContext context) {\n"
+                },
+                {
+                    "date": 1747558641308,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,9 +11,9 @@\n     return Shimmer.fromColors(\n       baseColor: Colors.grey[300]!,\n       highlightColor: Colors.grey[100]!,\n       child: Container(\n-        height: height,\n+        height: height\n         width: width,\n         decoration: BoxDecoration(\n           color: Colors.grey[300],\n           borderRadius: borderRadius,\n"
+                },
+                {
+                    "date": 1747558646684,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,10 +11,10 @@\n     return Shimmer.fromColors(\n       baseColor: Colors.grey[300]!,\n       highlightColor: Colors.grey[100]!,\n       child: Container(\n-        height: height\n-        width: width,\n+        height: 80,\n+        width: ,\n         decoration: BoxDecoration(\n           color: Colors.grey[300],\n           borderRadius: borderRadius,\n         ),\n"
+                },
+                {
+                    "date": 1747558652855,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,9 +12,9 @@\n       baseColor: Colors.grey[300]!,\n       highlightColor: Colors.grey[100]!,\n       child: Container(\n         height: 80,\n-        width: ,\n+        width: MediaQuery.of(context).,\n         decoration: BoxDecoration(\n           color: Colors.grey[300],\n           borderRadius: borderRadius,\n         ),\n"
+                },
+                {
+                    "date": 1747558660982,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,12 +12,12 @@\n       baseColor: Colors.grey[300]!,\n       highlightColor: Colors.grey[100]!,\n       child: Container(\n         height: 80,\n-        width: MediaQuery.of(context).,\n+        width: MediaQuery.of(context).size.width*0.8,\n         decoration: BoxDecoration(\n           color: Colors.grey[300],\n-          borderRadius: borderRadius,\n+          // borderRadius: borderRadius,\n         ),\n       ),\n     );\n   }\n"
+                },
+                {
+                    "date": 1747559059097,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,10 +2,10 @@\n import 'package:shimmer/shimmer.dart';\n \n class ShimmerSkeleton extends StatelessWidget {\n   const ShimmerSkeleton({\n-    Key? key,\n-  }) : super(key: key);\n+    super.key,\n+  });\n \n   @override\n   Widget build(BuildContext context) {\n     return Shimmer.fromColors(\n"
+                }
+            ],
+            "date": 1747558604566,
+            "name": "Commit-0",
+            "content": "import 'package:shimmer/shimmer.dart';\nimport 'package:flutter/material.dart';\n\nclass ShimmerSkeleton extends StatelessWidget {\n  final double height;\n  final double width;\n  final BorderRadius borderRadius;\n\n  const ShimmerSkeleton({\n    Key? key,\n    required this.height,\n    required this.width,\n    this.borderRadius = const BorderRadius.all(Radius.circular(8)),\n  }) : super(key: key);\n\n  @override\n  Widget build(BuildContext context) {\n    return Shimmer.fromColors(\n      baseColor: Colors.grey[300]!,\n      highlightColor: Colors.grey[100]!,\n      child: Container(\n        height: height,\n        width: width,\n        decoration: BoxDecoration(\n          color: Colors.grey[300],\n          borderRadius: borderRadius,\n        ),\n      ),\n    );\n  }\n}\n"
+        }
+    ]
+}

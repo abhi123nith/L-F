@@ -1,0 +1,18 @@
+{
+    "sourceFile": "analysis_options.yaml",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1747555860585,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1747555860585,
+            "name": "Commit-0",
+            "content": "# This file configures the analyzer, which statically analyzes Dart code to\r\n# check for errors, warnings, and lints.\r\n#\r\n# The issues identified by the analyzer are surfaced in the UI of Dart-enabled\r\n# IDEs (https://dart.dev/tools#ides-and-editors). The analyzer can also be\r\n# invoked from the command line by running `flutter analyze`.\r\n\r\n# The following line activates a set of recommended lints for Flutter apps,\r\n# packages, and plugins designed to encourage good coding practices.\r\nanalyzer:\r\n  errors:\r\n    avoid_print: ignore\r\n    camel_case_types: ignore\r\n    deprecated_member_use: ignore\r\n    library_private_types_in_public_api: ignore\r\n    must_be_immutable: ignore\r\n    unused_element: ignore\r\n    unused_field: ignore\r\n    use_build_context_synchronously: ignore\r\n    use_key_in_widget_constructors: ignore\r\ninclude: package:flutter_lints/flutter.yaml\r\n\r\nlinter:\r\n  # The lint rules applied to this project can be customized in the\r\n  # section below to disable rules from the `package:flutter_lints/flutter.yaml`\r\n  # included above or to enable additional rules. A list of all available lints\r\n  # and their documentation is published at https://dart.dev/lints.\r\n  #\r\n  # Instead of disabling a lint rule for the entire project in the\r\n  # section below, it can also be suppressed for a single line of code\r\n  # or a specific dart file by using the `// ignore: name_of_lint` and\r\n  # `// ignore_for_file: name_of_lint` syntax on the line or in the file\r\n  # producing the lint.\r\n  rules:\r\n    # avoid_print: false  # Uncomment to disable the `avoid_print` rule\r\n    # prefer_single_quotes: true  # Uncomment to enable the `prefer_single_quotes` rule\r\n\r\n# Additional information about this file can be found at\r\n# https://dart.dev/guides/language/analysis-options\r\n"
+        }
+    ]
+}
