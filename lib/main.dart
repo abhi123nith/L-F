@@ -91,7 +91,7 @@ class AuthWrapper extends StatelessWidget {
 
 class AuthWrapper2 extends StatelessWidget {
   const AuthWrapper2({super.key});
-
+// Trigger deployment
   @override
   Widget build(BuildContext context) {
     // Check if the user is signed in
