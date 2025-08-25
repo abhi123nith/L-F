@@ -78,6 +78,117 @@ class _LostFoundPageState extends State<LostFoundPage> {
     }
   }
 
+  // --- ADD THIS METHOD 1: To submit a report to Firestore ---
+  Future<void> _submitReport(
+      BuildContext context, PostModel post, String reason,
+      {String? details}) async {
+    if (user == null) return; // User must be logged in to report
+
+    try {
+      await FirebaseFirestore.instance.collection('reports').add({
+        'postId': post.postId,
+        'postOwnerId': post.postmakerId,
+        'reporterId': user!.uid,
+        'reason': reason,
+        'details': details ?? '',
+        'timestamp': FieldValue.serverTimestamp(),
+        'status': 'pending', // For moderation tracking
+      });
+
+      if (!mounted) return;
+      Navigator.of(context).pop(); // Close the report dialog
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.green,
+          content: Text('Report submitted successfully. Thank you.'),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.red,
+          content: Text('Failed to submit report: $e'),
+        ),
+      );
+    }
+  }
+
+  // --- ADD THIS METHOD 2: To show the report dialog ---
+  void _showReportDialog(BuildContext context, PostModel post) {
+    String? selectedReason;
+    final otherReasonController = TextEditingController();
+    final reportReasons = [
+      'Spam or Misleading',
+      'Inappropriate Content',
+      'Potential Scam',
+      'Harassment',
+      'Other',
+    ];
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: const Text('Report Post'),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ...reportReasons.map((reason) => RadioListTile<String>(
+                          title: Text(reason),
+                          value: reason,
+                          groupValue: selectedReason,
+                          onChanged: (value) {
+                            setDialogState(() {
+                              selectedReason = value;
+                            });
+                          },
+                        )),
+                    if (selectedReason == 'Other')
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: TextField(
+                          controller: otherReasonController,
+                          autofocus: true,
+                          decoration: const InputDecoration(
+                            hintText: 'Please provide details...',
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: selectedReason == null
+                      ? null // Disable button until a reason is selected
+                      : () {
+                          _submitReport(
+                            dialogContext,
+                            post,
+                            selectedReason!,
+                            details: selectedReason == 'Other'
+                                ? otherReasonController.text
+                                : null,
+                          );
+                        },
+                  child: const Text('Submit'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
   Future<Map<String, String>> _fetchUserNameAndProfilePic(String uid) async {
     if (_userCache.containsKey(uid)) {
       return _userCache[uid]!; // Return cached data if available
@@ -378,13 +489,42 @@ class _LostFoundPageState extends State<LostFoundPage> {
                                     // Header  of the POST (profiel,name.location,delete)
                                     GestureDetector(
                                       onTap: () {
-                                        print(
-                                            'EROROR ::: ${post.profileImageUrl}');
+                                        // print(
+                                        //     'EROROR ::: ${post.profileImageUrl}');
                                         Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (_) => ProfilePage2(
-                                                    uid: post.postmakerId)));
+                                          context,
+                                          PageRouteBuilder(
+                                            transitionDuration: const Duration(
+                                                milliseconds:
+                                                    400), // smoothness
+                                            pageBuilder: (context, animation,
+                                                    secondaryAnimation) =>
+                                                ProfilePage2(uid: post.postmakerId),
+                                            transitionsBuilder: (context,
+                                                animation,
+                                                secondaryAnimation,
+                                                child) {
+                                              // Curve for smoother effect
+                                              final curvedAnimation =
+                                                  CurvedAnimation(
+                                                parent: animation,
+                                                curve: Curves.easeInOut,
+                                              );
+
+                                              return SlideTransition(
+                                                position: Tween<Offset>(
+                                                  begin: const Offset(1.0,
+                                                      0.0), // start from right
+                                                  end: Offset.zero,
+                                                ).animate(curvedAnimation),
+                                                child: FadeTransition(
+                                                  opacity: curvedAnimation,
+                                                  child: child,
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        );
                                       },
                                       child: ListTile(
                                         leading: CircleAvatar(
@@ -397,35 +537,72 @@ class _LostFoundPageState extends State<LostFoundPage> {
                                                 fontWeight: FontWeight.bold)),
                                         subtitle: Text(
                                             "Location : ${post.location} , NITH"),
+                                        // --- REPLACE the existing trailing property with this ---
                                         trailing: PopupMenuButton<String>(
                                           onSelected: (value) {
                                             if (value == 'Delete') {
-                                              if (user!.uid ==
-                                                  post.postmakerId) {
-                                                _showDeleteConfirmation(
-                                                    context, post);
-                                              } else {
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(
-                                                  const SnackBar(
-                                                      backgroundColor:
-                                                          Colors.red,
-                                                      content: Text(
-                                                          "You can't delete this post")),
-                                                );
-                                              }
+                                              // Assumes _showDeleteConfirmation is defined elsewhere in your class
+                                              _showDeleteConfirmation(
+                                                  context, post);
+                                            } else if (value == 'Report') {
+                                              _showReportDialog(context, post);
                                             }
                                           },
                                           itemBuilder: (BuildContext context) {
-                                            return {'Delete'}
-                                                .map((String choice) {
-                                              return PopupMenuItem<String>(
-                                                value: choice,
-                                                child: Text(choice),
+                                            List<PopupMenuEntry<String>>
+                                                menuItems = [];
+
+                                            // Only show the delete option if the current user is the owner
+                                            if (user?.uid == post.postmakerId) {
+                                              menuItems.add(
+                                                const PopupMenuItem<String>(
+                                                  value: 'Delete',
+                                                  child: Text('Delete'),
+                                                ),
                                               );
-                                            }).toList();
+                                            }
+
+                                            // Always show the report option for other users' posts
+                                            if (user?.uid != post.postmakerId) {
+                                              menuItems.add(
+                                                const PopupMenuItem<String>(
+                                                  value: 'Report',
+                                                  child: Text('Report'),
+                                                ),
+                                              );
+                                            }
+                                            return menuItems;
                                           },
                                         ),
+                                        // trailing: PopupMenuButton<String>(
+                                        //   onSelected: (value) {
+                                        //     if (value == 'Delete') {
+                                        //       if (user!.uid ==
+                                        //           post.postmakerId) {
+                                        //         _showDeleteConfirmation(
+                                        //             context, post);
+                                        //       } else {
+                                        //         ScaffoldMessenger.of(context)
+                                        //             .showSnackBar(
+                                        //           const SnackBar(
+                                        //               backgroundColor:
+                                        //                   Colors.red,
+                                        //               content: Text(
+                                        //                   "You can't delete this post")),
+                                        //         );
+                                        //       }
+                                        //     }
+                                        //   },
+                                        //   itemBuilder: (BuildContext context) {
+                                        //     return {'Delete'}
+                                        //         .map((String choice) {
+                                        //       return PopupMenuItem<String>(
+                                        //         value: choice,
+                                        //         child: Text(choice),
+                                        //       );
+                                        //     }).toList();
+                                        //   },
+                                        // ),
                                       ),
                                     ),
 
@@ -448,7 +625,8 @@ class _LostFoundPageState extends State<LostFoundPage> {
                                                   MaterialPageRoute(
                                                     builder: (context) =>
                                                         FullScreenImageViewer(
-                                                            post.itemImages,isMobile),
+                                                            post.itemImages,
+                                                            isMobile),
                                                   ),
                                                 );
                                               },
@@ -877,10 +1055,35 @@ class _LostFoundPageState extends State<LostFoundPage> {
                   TextButton(
                       onPressed: () {
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) =>
-                                    ProfilePage2(uid: postmakerId)));
+                          context,
+                          PageRouteBuilder(
+                            transitionDuration:
+                                const Duration(milliseconds: 400), // smoothness
+                            pageBuilder:
+                                (context, animation, secondaryAnimation) =>
+                                    ProfilePage2(uid: postmakerId),
+                            transitionsBuilder: (context, animation,
+                                secondaryAnimation, child) {
+                              // Curve for smoother effect
+                              final curvedAnimation = CurvedAnimation(
+                                parent: animation,
+                                curve: Curves.easeInOut,
+                              );
+
+                              return SlideTransition(
+                                position: Tween<Offset>(
+                                  begin: const Offset(
+                                      1.0, 0.0), // start from right
+                                  end: Offset.zero,
+                                ).animate(curvedAnimation),
+                                child: FadeTransition(
+                                  opacity: curvedAnimation,
+                                  child: child,
+                                ),
+                              );
+                            },
+                          ),
+                        );
                       },
                       child: Text(postmaker))
                 ],
@@ -1035,10 +1238,35 @@ class _LostFoundPageState extends State<LostFoundPage> {
                   TextButton(
                       onPressed: () {
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) =>
-                                    ProfilePage2(uid: postclaimerId)));
+                          context,
+                          PageRouteBuilder(
+                            transitionDuration:
+                                const Duration(milliseconds: 400), // smoothness
+                            pageBuilder:
+                                (context, animation, secondaryAnimation) =>
+                                    ProfilePage2(uid: postclaimerId),
+                            transitionsBuilder: (context, animation,
+                                secondaryAnimation, child) {
+                              // Curve for smoother effect
+                              final curvedAnimation = CurvedAnimation(
+                                parent: animation,
+                                curve: Curves.easeInOut,
+                              );
+
+                              return SlideTransition(
+                                position: Tween<Offset>(
+                                  begin: const Offset(
+                                      1.0, 0.0), // start from right
+                                  end: Offset.zero,
+                                ).animate(curvedAnimation),
+                                child: FadeTransition(
+                                  opacity: curvedAnimation,
+                                  child: child,
+                                ),
+                              );
+                            },
+                          ),
+                        );
                       },
                       child: Text(
                           user!.uid == postclaimerId ? 'You' : claimername,
@@ -1180,7 +1408,7 @@ class _LostFoundPageState extends State<LostFoundPage> {
 class FullScreenImageViewer extends StatefulWidget {
   final List<String> images;
   bool isMobile;
-   FullScreenImageViewer(this.images, this.isMobile,{super.key});
+  FullScreenImageViewer(this.images, this.isMobile, {super.key});
 
   @override
   _FullScreenImageViewerState createState() => _FullScreenImageViewerState();
@@ -1207,7 +1435,9 @@ class _FullScreenImageViewerState extends State<FullScreenImageViewer> {
             itemBuilder: (context, index) {
               return Center(
                 child: Image.network(
-                  width:widget.isMobile ? MediaQuery.of(context).size.width:MediaQuery.of(context).size.width*0.5,
+                  width: widget.isMobile
+                      ? MediaQuery.of(context).size.width
+                      : MediaQuery.of(context).size.width * 0.5,
                   widget.images[index],
                   fit: BoxFit.contain,
                 ),

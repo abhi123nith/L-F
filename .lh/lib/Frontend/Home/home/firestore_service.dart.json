@@ -1,0 +1,26 @@
+{
+    "sourceFile": "lib/Frontend/Home/home/firestore_service.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 2,
+            "patches": [
+                {
+                    "date": 1756124224923,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1756124391819,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,6 @@\n import 'package:cloud_firestore/cloud_firestore.dart';\n import 'package:intl/intl.dart';\n-import '../models/post_model.dart'; // Adjust this import to your project structure\n \n class FirestoreService {\n   final FirebaseFirestore _db = FirebaseFirestore.instance;\n   final Map<String, Map<String, String>> _userCache = {};\n"
+                },
+                {
+                    "date": 1756124403521,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,7 @@\n import 'package:cloud_firestore/cloud_firestore.dart';\n import 'package:intl/intl.dart';\n+import 'package:l_f/Frontend/Home/Post/post_model.dart';\n \n class FirestoreService {\n   final FirebaseFirestore _db = FirebaseFirestore.instance;\n   final Map<String, Map<String, String>> _userCache = {};\n@@ -8,9 +9,9 @@\n   Stream<QuerySnapshot> getPostsStream({\n     String type = 'All',\n     String location = 'Campus, NITH',\n     String category = 'All',\n-d    String dateRange = 'All Time',\n+   String dateRange = 'All Time',\n   }) {\n     Query query = _db.collection('posts');\n \n     if (type != 'All') query = query.where('status', isEqualTo: type);\n"
+                }
+            ],
+            "date": 1756124224923,
+            "name": "Commit-0",
+            "content": "import 'package:cloud_firestore/cloud_firestore.dart';\nimport 'package:intl/intl.dart';\nimport '../models/post_model.dart'; // Adjust this import to your project structure\n\nclass FirestoreService {\n  final FirebaseFirestore _db = FirebaseFirestore.instance;\n  final Map<String, Map<String, String>> _userCache = {};\n\n  Stream<QuerySnapshot> getPostsStream({\n    String type = 'All',\n    String location = 'Campus, NITH',\n    String category = 'All',\nd    String dateRange = 'All Time',\n  }) {\n    Query query = _db.collection('posts');\n\n    if (type != 'All') query = query.where('status', isEqualTo: type);\n    if (location != 'Campus, NITH') query = query.where('location', isEqualTo: location);\n    if (category != 'All') query = query.where('item', isEqualTo: category);\n\n    DateTime? startDate = _getStartDate(dateRange);\n    if (startDate != null) {\n      query = query.where('timestamp', isGreaterThanOrEqualTo: startDate);\n    }\n\n    return query.orderBy('timestamp', descending: true).snapshots();\n  }\n\n  Future<void> deletePost(String postId) async {\n    await _db.collection('posts').doc(postId).delete();\n  }\n\n  Future<Map<String, String>> fetchUserDetails(String uid) async {\n    if (_userCache.containsKey(uid)) return _userCache[uid]!;\n\n    try {\n      final userDoc = await _db.collection('users').doc(uid).get();\n      if (userDoc.exists) {\n        final userData = userDoc.data() as Map<String, dynamic>;\n        final Map<String, String> userDetails = {\n          'name': userData['name'] as String? ?? 'NITH User',\n          'profileImage': userData['profileImage'] as String? ?? '',\n        };\n        _userCache[uid] = userDetails;\n        return userDetails;\n      }\n    } catch (e) {\n      print(\"Error fetching user details: $e\");\n    }\n    return {'name': 'NITH User', 'profileImage': ''};\n  }\n  \n  Future<List<PostModel>> mapDocsToPostModels(List<QueryDocumentSnapshot> docs) async {\n    final futures = docs.map((doc) async {\n      final data = doc.data() as Map<String, dynamic>;\n      final userDetails = await fetchUserDetails(data['postmakerId']);\n      \n      String? postClaimerName;\n      if (data['isClaimed'] == true && data['postClaimer'] != null) {\n        final claimerDetails = await fetchUserDetails(data['postClaimer']);\n        postClaimerName = claimerDetails['name'];\n      }\n      \n      return PostModel.fromJson({\n        ...data,\n        'userName': userDetails['name'],\n        'profileImageUrl': userDetails['profileImage'],\n        'postTime': _formatDate(data['timestamp']),\n        'postClaimerName': postClaimerName,\n      });\n    }).toList();\n    return await Future.wait(futures);\n  }\n\n  String _formatDate(Timestamp? timestamp) {\n    if (timestamp == null) return 'Not available';\n    return DateFormat('dd MMMM yyyy').format(timestamp.toDate());\n  }\n\n  DateTime? _getStartDate(String dateRange) {\n    final now = DateTime.now();\n    switch (dateRange) {\n      case 'Today': return DateTime(now.year, now.month, now.day);\n      case 'This Week': return now.subtract(Duration(days: now.weekday - 1));\n      case 'This Month': return DateTime(now.year, now.month, 1);\n      case 'This Year': return DateTime(now.year, 1, 1);\n      default: return null;\n    }\n  }\n}\n"
+        }
+    ]
+}

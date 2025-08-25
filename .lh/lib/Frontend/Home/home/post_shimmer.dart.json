@@ -1,0 +1,18 @@
+{
+    "sourceFile": "lib/Frontend/Home/home/post_shimmer.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1756124250046,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1756124250046,
+            "name": "Commit-0",
+            "content": "import 'package:flutter/material.dart';\nimport 'package:shimmer/shimmer.dart';\n\nclass PostShimmerCard extends StatelessWidget {\n  const PostShimmerCard({super.key});\n\n  @override\n  Widget build(BuildContext context) {\n    return Shimmer.fromColors(\n      baseColor: Colors.grey[300]!,\n      highlightColor: Colors.grey[100]!,\n      child: Card(\n        elevation: 4,\n        margin: const EdgeInsets.symmetric(vertical: 8.0),\n        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),\n        child: Column(\n          crossAxisAlignment: CrossAxisAlignment.start,\n          children: [\n            ListTile(\n              leading: const CircleAvatar(radius: 25, backgroundColor: Colors.white),\n              title: Container(width: 120.0, height: 16.0, color: Colors.white),\n              subtitle: Container(width: 200.0, height: 12.0, color: Colors.white, margin: const EdgeInsets.only(top: 4)),\n            ),\n            Container(\n              height: 200.0,\n              color: Colors.white,\n            ),\n            Padding(\n              padding: const EdgeInsets.all(16.0),\n              child: Column(\n                crossAxisAlignment: CrossAxisAlignment.start,\n                children: [\n                  Container(width: double.infinity, height: 20.0, color: Colors.white),\n                  const SizedBox(height: 8),\n                  Container(width: 150.0, height: 12.0, color: Colors.white),\n                  const SizedBox(height: 12),\n                  Container(width: 250.0, height: 14.0, color: Colors.white),\n                ],\n              ),\n            ),\n          ],\n        ),\n      ),\n    );\n  }\n}\n"
+        }
+    ]
+}

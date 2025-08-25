@@ -289,29 +289,52 @@ class _LoginPageState extends State<LoginPage> {
                     TextButton(
                       onPressed: () {
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => const ResetPasswordPage()));
+                        context,
+                        PageRouteBuilder(
+                          transitionDuration: const Duration(milliseconds: 500),
+                          pageBuilder: (_, __, ___) => const ResetPasswordPage(),
+                          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                            return FadeTransition(
+                              opacity: animation,
+                              child: child,
+                            );
+                          },
+                        ),
+                      );
                       },
                       child: const Text(
                         'Forgot Password?',
                         style: TextStyle(
-                          decoration: TextDecoration.underline,
-                            color: Colors.black, fontWeight: FontWeight.bold),
+                            decoration: TextDecoration.underline,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold),
                       ),
                     ),
                     TextButton(
                       onPressed: () {
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => const SignUpPage()));
+                          context,
+                          PageRouteBuilder(
+                            transitionDuration:
+                                const Duration(milliseconds: 500),
+                            pageBuilder: (_, __, ___) =>
+                                const SignUpPage(),
+                            transitionsBuilder: (context, animation,
+                                secondaryAnimation, child) {
+                              return FadeTransition(
+                                opacity: animation,
+                                child: child,
+                              );
+                            },
+                          ),
+                        );
                       },
                       child: const Text(
                         'Don\'t have an account? Sign Up',
                         style: TextStyle(
-                          decoration: TextDecoration.underline,
-                            color: Colors.black, fontWeight: FontWeight.bold),
+                            decoration: TextDecoration.underline,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold),
                       ),
                     ),
                   ],

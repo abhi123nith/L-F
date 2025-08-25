@@ -1,0 +1,22 @@
+{
+    "sourceFile": "lib/newCode/service/profile_service.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1756116817100,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1756116941342,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,37 @@\n+// lib/services/profile_service.dart\n+import 'package:cloud_firestore/cloud_firestore.dart';\n+import 'package:l_f/newCode/service/user_service.dart';\n+import 'package:l_f/services/user_service.dart';\n+\n+/// A service to handle profile-specific data and business logic.\n+class ProfileService {\n+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;\n+  final UserService _userService = UserService();\n+\n+  /// Fetches user data for a given UID.\n+  Future<Map<String, dynamic>?> fetchUserDetails(String uid) {\n+    return _userService.fetchUserData(uid);\n+  }\n+\n+  /// Checks if a phone number can be shown to the current user.\n+  /// The logic is based on whether the current user has a claimed a post\n+  /// that was created by the profile owner.\n+  Future<bool> canShowPhoneNumber(String profileOwnerId, String currentUserId) async {\n+    try {\n+      if (profileOwnerId == currentUserId) {\n+        return true; // The user can always see their own number\n+      }\n+\n+      final claims = await _firestore\n+          .collection('posts')\n+          .where('postClaimer', isEqualTo: profileOwnerId)\n+          .where('isClaimed', isEqualTo: true)\n+          .get();\n+      \n+      return claims.docs.isNotEmpty;\n+    } catch (e) {\n+      print('Error checking phone number visibility: $e');\n+      return false;\n+    }\n+  }\n+}\n"
+                }
+            ],
+            "date": 1756116817100,
+            "name": "Commit-0",
+            "content": "// lib/services/profile_service.dart\nimport 'package:cloud_firestore/cloud_firestore.dart';\nimport 'package:l_f/services/user_service.dart';\n\n/// A service to handle profile-specific data and business logic.\nclass ProfileService {\n  final FirebaseFirestore _firestore = FirebaseFirestore.instance;\n  final UserService _userService = UserService();\n\n  /// Fetches user data for a given UID.\n  Future<Map<String, dynamic>?> fetchUserDetails(String uid) {\n    return _userService.fetchUserData(uid);\n  }\n\n  /// Checks if a phone number can be shown to the current user.\n  /// The logic is based on whether the current user has a claimed a post\n  /// that was created by the profile owner.\n  Future<bool> canShowPhoneNumber(String profileOwnerId, String currentUserId) async {\n    try {\n      if (profileOwnerId == currentUserId) {\n        return true; // The user can always see their own number\n      }\n\n      final claims = await _firestore\n          .collection('posts')\n          .where('postClaimer', isEqualTo: profileOwnerId)\n          .where('isClaimed', isEqualTo: true)\n          .get();\n      \n      return claims.docs.isNotEmpty;\n    } catch (e) {\n      print('Error checking phone number visibility: $e');\n      return false;\n    }\n  }\n}\n"
+        }
+    ]
+}

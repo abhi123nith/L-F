@@ -1,0 +1,22 @@
+{
+    "sourceFile": "lib/newCode/Frontend/components/profile_info_field.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1756116688132,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1756123014154,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,43 +1,43 @@\n-// lib/Frontend/components/profile_info_field.dart\n-import 'package:flutter/material.dart';\n+// // lib/Frontend/components/profile_info_field.dart\n+// import 'package:flutter/material.dart';\n \n-/// A reusable widget to display or edit a single line of profile information.\n-class ProfileInfoField extends StatelessWidget {\n-  final String label;\n-  final TextEditingController controller;\n-  final bool isEditable;\n+// /// A reusable widget to display or edit a single line of profile information.\n+// class ProfileInfoField extends StatelessWidget {\n+//   final String label;\n+//   final TextEditingController controller;\n+//   final bool isEditable;\n \n-  const ProfileInfoField({\n-    super.key,\n-    required this.label,\n-    required this.controller,\n-    this.isEditable = false,\n-  });\n+//   const ProfileInfoField({\n+//     super.key,\n+//     required this.label,\n+//     required this.controller,\n+//     this.isEditable = false,\n+//   });\n \n-  @override\n-  Widget build(BuildContext context) {\n-    return Column(\n-      crossAxisAlignment: CrossAxisAlignment.start,\n-      children: [\n-        Text(\n-          label,\n-          style: const TextStyle(\n-            fontSize: 16.0,\n-            fontWeight: FontWeight.bold,\n-          ),\n-        ),\n-        const SizedBox(height: 8.0),\n-        TextFormField(\n-          controller: controller,\n-          enabled: isEditable,\n-          decoration: InputDecoration(\n-            border: OutlineInputBorder(\n-              borderRadius: BorderRadius.circular(8.0),\n-            ),\n-          ),\n-        ),\n-        const SizedBox(height: 16.0),\n-      ],\n-    );\n-  }\n-}\n+//   @override\n+//   Widget build(BuildContext context) {\n+//     return Column(\n+//       crossAxisAlignment: CrossAxisAlignment.start,\n+//       children: [\n+//         Text(\n+//           label,\n+//           style: const TextStyle(\n+//             fontSize: 16.0,\n+//             fontWeight: FontWeight.bold,\n+//           ),\n+//         ),\n+//         const SizedBox(height: 8.0),\n+//         TextFormField(\n+//           controller: controller,\n+//           enabled: isEditable,\n+//           decoration: InputDecoration(\n+//             border: OutlineInputBorder(\n+//               borderRadius: BorderRadius.circular(8.0),\n+//             ),\n+//           ),\n+//         ),\n+//         const SizedBox(height: 16.0),\n+//       ],\n+//     );\n+//   }\n+// }\n"
+                }
+            ],
+            "date": 1756116688132,
+            "name": "Commit-0",
+            "content": "// lib/Frontend/components/profile_info_field.dart\nimport 'package:flutter/material.dart';\n\n/// A reusable widget to display or edit a single line of profile information.\nclass ProfileInfoField extends StatelessWidget {\n  final String label;\n  final TextEditingController controller;\n  final bool isEditable;\n\n  const ProfileInfoField({\n    super.key,\n    required this.label,\n    required this.controller,\n    this.isEditable = false,\n  });\n\n  @override\n  Widget build(BuildContext context) {\n    return Column(\n      crossAxisAlignment: CrossAxisAlignment.start,\n      children: [\n        Text(\n          label,\n          style: const TextStyle(\n            fontSize: 16.0,\n            fontWeight: FontWeight.bold,\n          ),\n        ),\n        const SizedBox(height: 8.0),\n        TextFormField(\n          controller: controller,\n          enabled: isEditable,\n          decoration: InputDecoration(\n            border: OutlineInputBorder(\n              borderRadius: BorderRadius.circular(8.0),\n            ),\n          ),\n        ),\n        const SizedBox(height: 16.0),\n      ],\n    );\n  }\n}\n"
+        }
+    ]
+}

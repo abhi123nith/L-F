@@ -1,0 +1,22 @@
+{
+    "sourceFile": "lib/newCode/Frontend/components/shimmer_skeleton.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1756118377264,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1756123011498,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,24 +1,24 @@\n-// lib/Frontend/components/shimmer_skeleton.dart\n-import 'package:flutter/material.dart';\n-import 'package:shimmer/shimmer.dart';\n+// // lib/Frontend/components/shimmer_skeleton.dart\n+// import 'package:flutter/material.dart';\n+// import 'package:shimmer/shimmer.dart';\n \n-class ShimmerSkeleton extends StatelessWidget {\n-  const ShimmerSkeleton({super.key});\n+// class ShimmerSkeleton extends StatelessWidget {\n+//   const ShimmerSkeleton({super.key});\n \n-  @override\n-  Widget build(BuildContext context) {\n-    return Shimmer.fromColors(\n-      baseColor: Colors.grey[300]!,\n-      highlightColor: Colors.grey[100]!,\n-      child: Container(\n-        margin: const EdgeInsets.all(15),\n-        height: 80,\n-        width: MediaQuery.of(context).size.width * 0.8,\n-        decoration: BoxDecoration(\n-          color: Colors.grey[300],\n-          borderRadius: const BorderRadius.all(Radius.circular(8)),\n-        ),\n-      ),\n-    );\n-  }\n-}\n+//   @override\n+//   Widget build(BuildContext context) {\n+//     return Shimmer.fromColors(\n+//       baseColor: Colors.grey[300]!,\n+//       highlightColor: Colors.grey[100]!,\n+//       child: Container(\n+//         margin: const EdgeInsets.all(15),\n+//         height: 80,\n+//         width: MediaQuery.of(context).size.width * 0.8,\n+//         decoration: BoxDecoration(\n+//           color: Colors.grey[300],\n+//           borderRadius: const BorderRadius.all(Radius.circular(8)),\n+//         ),\n+//       ),\n+//     );\n+//   }\n+// }\n"
+                }
+            ],
+            "date": 1756118377264,
+            "name": "Commit-0",
+            "content": "// lib/Frontend/components/shimmer_skeleton.dart\nimport 'package:flutter/material.dart';\nimport 'package:shimmer/shimmer.dart';\n\nclass ShimmerSkeleton extends StatelessWidget {\n  const ShimmerSkeleton({super.key});\n\n  @override\n  Widget build(BuildContext context) {\n    return Shimmer.fromColors(\n      baseColor: Colors.grey[300]!,\n      highlightColor: Colors.grey[100]!,\n      child: Container(\n        margin: const EdgeInsets.all(15),\n        height: 80,\n        width: MediaQuery.of(context).size.width * 0.8,\n        decoration: BoxDecoration(\n          color: Colors.grey[300],\n          borderRadius: const BorderRadius.all(Radius.circular(8)),\n        ),\n      ),\n    );\n  }\n}\n"
+        }
+    ]
+}

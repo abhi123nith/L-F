@@ -1,0 +1,30 @@
+{
+    "sourceFile": "lib/Frontend/Home/home/lf_home_page.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 3,
+            "patches": [
+                {
+                    "date": 1756124325691,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1756124331954,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,7 @@\n import 'package:flutter/material.dart';\n import 'package:cloud_firestore/cloud_firestore.dart';\n+import 'package:l_f/Frontend/Home/home/post_list.dart';\n import '../models/post_model.dart';\n import '../services/firestore_service.dart';\n import '../widgets/filter_bar.dart';\n import '../widgets/post_list.dart';\n"
+                },
+                {
+                    "date": 1756124362632,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,8 @@\n import 'package:flutter/material.dart';\n import 'package:cloud_firestore/cloud_firestore.dart';\n+import 'package:l_f/Frontend/Home/Post/post_model.dart';\n+import 'package:l_f/Frontend/Home/home/filet_dropdown.dart';\n import 'package:l_f/Frontend/Home/home/post_list.dart';\n import '../models/post_model.dart';\n import '../services/firestore_service.dart';\n import '../widgets/filter_bar.dart';\n"
+                },
+                {
+                    "date": 1756124374000,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,13 +2,10 @@\n import 'package:cloud_firestore/cloud_firestore.dart';\n import 'package:l_f/Frontend/Home/Post/post_model.dart';\n import 'package:l_f/Frontend/Home/home/filet_dropdown.dart';\n import 'package:l_f/Frontend/Home/home/post_list.dart';\n-import '../models/post_model.dart';\n-import '../services/firestore_service.dart';\n-import '../widgets/filter_bar.dart';\n-import '../widgets/post_list.dart';\n \n+\n class LostFoundPage extends StatefulWidget {\n   const LostFoundPage({super.key});\n \n   @override\n"
+                }
+            ],
+            "date": 1756124325691,
+            "name": "Commit-0",
+            "content": "import 'package:flutter/material.dart';\nimport 'package:cloud_firestore/cloud_firestore.dart';\nimport '../models/post_model.dart';\nimport '../services/firestore_service.dart';\nimport '../widgets/filter_bar.dart';\nimport '../widgets/post_list.dart';\n\nclass LostFoundPage extends StatefulWidget {\n  const LostFoundPage({super.key});\n\n  @override\n  State<LostFoundPage> createState() => _LostFoundPageState();\n}\n\nclass _LostFoundPageState extends State<LostFoundPage> {\n  final FirestoreService _firestoreService = FirestoreService();\n  late Stream<QuerySnapshot> _postStream;\n\n  String _selectedType = 'All';\n  String _selectedLocation = 'Campus, NITH';\n  String _selectedCategory = 'All';\n  String _selectedDateRange = 'All Time';\n\n  @override\n  void initState() {\n    super.initState();\n    _updateStream();\n  }\n\n  void _updateStream() {\n    setState(() {\n      _postStream = _firestoreService.getPostsStream(\n        type: _selectedType,\n        location: _selectedLocation,\n        category: _selectedCategory,\n        dateRange: _selectedDateRange,\n      );\n    });\n  }\n\n  void _onFilterChanged({String? type, String? location, String? category, String? dateRange}) {\n    setState(() {\n      _selectedType = type ?? _selectedType;\n      _selectedLocation = location ?? _selectedLocation;\n      _selectedCategory = category ?? _selectedCategory;\n      _selectedDateRange = dateRange ?? _selectedDateRange;\n    });\n    _updateStream();\n  }\n\n  void _showDeleteConfirmation(BuildContext context, PostModel post) {\n    showDialog(\n      context: context,\n      builder: (dialogContext) => AlertDialog(\n        title: const Text('Delete Post'),\n        content: const Text('Are you sure you want to delete this post?'),\n        actions: [\n          TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: const Text('No')),\n          TextButton(\n            onPressed: () async {\n              Navigator.of(dialogContext).pop();\n              try {\n                await _firestoreService.deletePost(post.postId);\n                if (!mounted) return;\n                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Post deleted')));\n              } catch (e) {\n                if (!mounted) return;\n                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));\n              }\n            },\n            child: const Text('Yes'),\n          ),\n        ],\n      ),\n    );\n  }\n\n  @override\n  Widget build(BuildContext context) {\n    return Scaffold(\n      appBar: AppBar(\n        title: const Text(\"Lost & Found\"),\n      ),\n      body: Column(\n        children: [\n          FilterBar(onFilterChanged: _onFilterChanged),\n          const Divider(height: 1),\n          Expanded(\n            child: PostList(\n              stream: _postStream,\n              mapDocsFunction: _firestoreService.mapDocsToPostModels,\n              onDelete: (post) => _showDeleteConfirmation(context, post),\n            ),\n          ),\n        ],\n      ),\n    );\n  }\n}\n"
+        }
+    ]
+}

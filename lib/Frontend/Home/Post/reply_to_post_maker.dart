@@ -64,10 +64,21 @@ class ReplyToPostMaker {
                   TextButton(
                       onPressed: () {
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) =>
-                                    ProfilePage2(uid: postclaimerId)));
+                          context,
+                          PageRouteBuilder(
+                            transitionDuration:
+                                const Duration(milliseconds: 500),
+                            pageBuilder: (_, __, ___) =>
+                                ProfilePage2(uid: postclaimerId),
+                            transitionsBuilder: (context, animation,
+                                secondaryAnimation, child) {
+                              return FadeTransition(
+                                opacity: animation,
+                                child: child,
+                              );
+                            },
+                          ),
+                        );
                       },
                       child: Text(
                           user!.uid == postclaimerId ? 'You' : claimername,
@@ -108,10 +119,21 @@ class ReplyToPostMaker {
                   TextButton(
                       onPressed: () {
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) =>
-                                    ProfilePage2(uid: postmakerId)));
+                          context,
+                          PageRouteBuilder(
+                            transitionDuration:
+                                const Duration(milliseconds: 500),
+                            pageBuilder: (_, __, ___) =>
+                                ProfilePage2(uid: postmakerId),
+                            transitionsBuilder: (context, animation,
+                                secondaryAnimation, child) {
+                              return FadeTransition(
+                                opacity: animation,
+                                child: child,
+                              );
+                            },
+                          ),
+                        );
                       },
                       child: Text(postmaker))
                 ],
@@ -199,7 +221,8 @@ class ReplyToPostMaker {
                 if (answer.isNotEmpty) {
                   ReplyToPostMaker().sendAnswerToPostmaker(
                       context, answer, postId, postmakerId, 'requested', user);
-                  print('SENT DATATATAT : $answer, " ", $postId, "__" , $postmakerId');
+                  print(
+                      'SENT DATATATAT : $answer, " ", $postId, "__" , $postmakerId');
                 }
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(

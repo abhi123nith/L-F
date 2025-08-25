@@ -1,5 +1,25 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:l_f/Frontend/Home/ChatPage/userchatpage.dart';
+import 'package:l_f/Frontend/Home/Post/post_model.dart'; // Adjust these imports
+import 'package:l_f/Frontend/Home/admin/report/pst_card.dart';
+
+// Placeholder for your actual chat page
+class ChatPage extends StatelessWidget {
+  final String receiverId;
+  final String receiverName;
+  const ChatPage(
+      {super.key, required this.receiverId, required this.receiverName});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Chat with $receiverName')),
+      body: Center(child: Text('Chatting with user ID: $receiverId')),
+    );
+  }
+}
 
 class ProfilePage2 extends StatefulWidget {
   final String uid;
@@ -10,67 +30,72 @@ class ProfilePage2 extends StatefulWidget {
 }
 
 class _ProfilePage2State extends State<ProfilePage2> {
-  String? _nameController;
-  String? _emailController;
-  String? _phoneController;
-  String? _rollController;
-  String? _branchController;
-  String? _degreeController;
-  String? _gendercontroller;
-
-  String? year;
-  String? hostel;
-  String? degree;
-  String? rollNumber;
-  String? gender;
-  String? department;
-  String? profileImageUrl;
-
+  late Future<Map<String, dynamic>> _profileDataFuture;
   bool _showPhoneNumber = false;
-  late Future<Map<String, dynamic>?> _userDetails;
 
   @override
   void initState() {
     super.initState();
-    _userDetails = getUserDetails(widget.uid).then((data) {
-      if (data != null) {
-        _nameController = data['name'] ?? '';
-        _emailController = data['email'] ?? '';
-        _phoneController = data['phonenumber'] ?? '';
-        _rollController = data['rollNumber'] ?? '12345678';
-        _branchController = data['department'] + ' Department' ?? 'NITH';
-        profileImageUrl = data['profileImage'];
-        year = data['year'] ?? 'NITH';
-        hostel = data['hostel'] ?? 'NITH';
-        gender = data['gender'];
-        department = data['department'];
-        degree = data['degree'];
-        _degreeController = data['degree'];
-        _gendercontroller = data['gender'];
-      }
-      return data;
-    });
+    _profileDataFuture = _fetchProfileData();
   }
 
-  Future<Map<String, dynamic>?> getUserDetails(String uid) async {
-    DocumentSnapshot userDoc =
-        await FirebaseFirestore.instance.collection('users').doc(uid).get();
+  // Reusable method for smooth page transitions
+  Route _createSmoothRoute(Widget page) {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => page,
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = Offset(0.0, 0.1);
+        const end = Offset.zero;
+        const curve = Curves.easeOut;
 
-    if (userDoc.exists) {
-      return userDoc.data() as Map<String, dynamic>?;
-    }
-    return null;
+        var tween =
+            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+        var slideAnimation = animation.drive(tween);
+
+        return FadeTransition(
+          opacity: animation,
+          child: SlideTransition(
+            position: slideAnimation,
+            child: child,
+          ),
+        );
+      },
+      transitionDuration: const Duration(milliseconds: 400),
+    );
   }
 
-  Future<bool> _canShowPhoneNumber() async {
-    // Replace 'claimCollection' with the actual name of your collection
-    QuerySnapshot claims = await FirebaseFirestore.instance
-        .collection('posts')
-        .where('postClaimer', isEqualTo: widget.uid)
-        .where('isClaimed', isEqualTo: true)
+  // Fetches all user data and post counts in a single operation
+  Future<Map<String, dynamic>> _fetchProfileData() async {
+    final userDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.uid)
         .get();
 
-    return claims.docs.isNotEmpty;
+    if (!userDoc.exists) {
+      throw Exception('User not found');
+    }
+
+    final userData = userDoc.data()!;
+
+    // Fetch post count
+    final postQuery = await FirebaseFirestore.instance
+        .collection('posts')
+        .where('postmakerId', isEqualTo: widget.uid)
+        .get();
+
+    userData['postCount'] = postQuery.docs.length;
+
+    return userData;
+  }
+
+  // --- Logic for showing/hiding the phone number ---
+
+  Future<bool> _canShowPhoneNumber() async {
+    // This is a placeholder for your actual logic.
+    // For example, check if the current user has claimed an item from this user.
+    // Replace with your actual implementation.
+    // For now, it's set to 'false' for demonstration.
+    return false;
   }
 
   void _togglePhoneNumber() async {
@@ -80,161 +105,189 @@ class _ProfilePage2State extends State<ProfilePage2> {
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('You cannot view this phone number.')));
+        const SnackBar(
+            content:
+                Text('You do not have permission to view this phone number.')),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    bool isMobile = MediaQuery.of(context).size.width < 830;
-    Size size = MediaQuery.of(context).size;
+    final currentUser = FirebaseAuth.instance.currentUser;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile'),
+        title: const Text('User Profile'),
         backgroundColor: Colors.deepOrange,
         foregroundColor: Colors.white,
-        elevation: 4.0,
       ),
-      body: FutureBuilder<Map<String, dynamic>?>(
-        future: _userDetails,
+      body: FutureBuilder<Map<String, dynamic>>(
+        future: _profileDataFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
+          }
+          if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data == null) {
+          }
+          if (!snapshot.hasData) {
             return const Center(child: Text('User not found'));
           }
 
-          // When data is fetched successfully
+          final userData = snapshot.data!;
+          final profileImageUrl = userData['profileImage'] ?? '';
+          final warningCount = userData['warningCount'] ?? 0;
+          final bool isBlocked = warningCount >= 2;
+          final bool isAdmin = userData['email'] == '22bcs007@nith.ac.in';
+
           return SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-            child: Center(
-              child: SizedBox(
-                width: isMobile ? size.width : 500,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    _buildCard(
-                      child: Column(
-                        children: [
-                          Stack(
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  if (profileImageUrl != null) {
-                                    showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return Dialog(
-                                          child: Stack(
-                                            children: [
-                                              Image.network(profileImageUrl!),
-                                              Positioned(
-                                                right: 10,
-                                                top: 10,
-                                                child: IconButton(
-                                                  icon: const Icon(Icons.cancel,
-                                                      color: Colors.red),
-                                                  onPressed: () {
-                                                    Navigator.of(context).pop();
-                                                  },
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        );
-                                      },
-                                    );
-                                  }
-                                },
-                                child: CircleAvatar(
-                                  radius: 80.0,
-                                  backgroundColor: Colors.grey[200],
-                                  backgroundImage: profileImageUrl != null
-                                      ? NetworkImage(profileImageUrl!)
-                                      : null,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 20.0),
-                          _buildNonEditableEmailField(
-                              "Name", _nameController!, false),
-                          _buildNonEditableEmailField(
-                              "Email", _emailController!, false),
-                          _buildNonEditableEmailField("Phone Number",
-                              _phoneController!, !_showPhoneNumber),
-                          ElevatedButton(
-                            onPressed: _togglePhoneNumber,
-                            child: Text(_showPhoneNumber
-                                ? 'Hide Number'
-                                : 'Show Number'),
-                          ),
-                          _buildNonEditableEmailField(
-                              "Department", _branchController!, false),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Card(
-                                elevation: 3,
-                                child: Center(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: SizedBox(
-                                      child: Text(
-                                        hostel!,
-                                        style: const TextStyle(
-                                            fontSize: 16,
-                                            color: Colors.black54,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Card(
-                                elevation: 3,
-                                child: Center(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: SizedBox(
-                                      child: Text(
-                                        year!,
-                                        style: const TextStyle(
-                                            fontSize: 16,
-                                            color: Colors.black54,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Card(
-                                elevation: 3,
-                                child: Center(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: SizedBox(
-                                      child: Text(
-                                        degree!,
-                                        style: const TextStyle(
-                                            fontSize: 16,
-                                            color: Colors.black54,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // --- Main Profile Header ---
+                  CircleAvatar(
+                    radius: 60,
+                    backgroundColor: Colors.grey.shade300,
+                    backgroundImage: profileImageUrl.isNotEmpty
+                        ? NetworkImage(profileImageUrl)
+                        : null,
+                    child: profileImageUrl.isEmpty
+                        ? const Icon(Icons.person, size: 60, color: Colors.grey)
+                        : null,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    userData['name'] ?? 'No Name',
+                    style: Theme.of(context)
+                        .textTheme
+                        .headlineSmall
+                        ?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    userData['email'] ?? 'No Email',
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(color: Colors.grey.shade600),
+                  ),
+
+                  // --- Status Indicators (Admin or Blocked) ---
+                  if (isAdmin) ...[
+                    const SizedBox(height: 8),
+                    const Chip(
+                      label: Text('ADMIN'),
+                      backgroundColor: Colors.indigo,
+                      labelStyle: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold),
+                      avatar: Icon(Icons.shield, color: Colors.white),
                     ),
-                    const SizedBox(height: 20.0),
+                  ] else if (isBlocked) ...[
+                    const SizedBox(height: 8),
+                    Chip(
+                      label: const Text('BLOCKED'),
+                      backgroundColor: Colors.red.shade700,
+                      labelStyle: const TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold),
+                      avatar:
+                          const Icon(Icons.block_flipped, color: Colors.white),
+                    ),
                   ],
-                ),
+
+                  // --- NEW: Chat Button ---
+                  if (currentUser != null && currentUser.uid != widget.uid) ...[
+                    const SizedBox(height: 16),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.of(context).push(_createSmoothRoute(
+                            ChatDetailPage(otherUserId: widget.uid)));
+                      },
+                      icon: const Icon(Icons.chat_bubble_outline),
+                      label: const Text('Chat with this User'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.deepOrange,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24, vertical: 12),
+                      ),
+                    )
+                  ],
+
+                  const SizedBox(height: 24),
+
+                  // --- User Statistics ---
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _buildStatCard(
+                        context,
+                        icon: Icons.post_add,
+                        label: 'Posts Made',
+                        value: (userData['postCount'] ?? 0).toString(),
+                        color: Colors.blue,
+                      ),
+                      _buildStatCard(
+                        context,
+                        icon: Icons.warning_amber,
+                        label: 'Warnings',
+                        value: warningCount.toString(),
+                        color: Colors.orange,
+                      ),
+                      _buildStatCard(
+                        context,
+                        icon: Icons.report_problem_outlined,
+                        label: 'False Reports',
+                        value: (userData['falseReportCount'] ?? 0).toString(),
+                        color: Colors.red,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+
+                  // --- Detailed Information Boxes ---
+                  _buildInfoBox(
+                    icon: Icons.badge_outlined,
+                    title: 'Roll Number',
+                    subtitle: userData['rollNumber'] ?? 'Not Provided',
+                  ),
+                  _buildInfoBox(
+                    icon: Icons.school_outlined,
+                    title: 'Department',
+                    subtitle: userData['department'] ?? 'Not Provided',
+                  ),
+                  _buildInfoBox(
+                    icon: Icons.hotel_outlined,
+                    title: 'Hostel',
+                    subtitle: userData['hostel'] ?? 'Not Provided',
+                  ),
+                  _buildInfoBox(
+                    icon: Icons.phone_outlined,
+                    title: 'Phone',
+                    subtitle: _showPhoneNumber
+                        ? (userData['phonenumber'] ?? 'Not Provided')
+                        : '**********',
+                    trailing: IconButton(
+                      icon: Icon(_showPhoneNumber
+                          ? Icons.visibility_off
+                          : Icons.visibility),
+                      onPressed: _togglePhoneNumber,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // --- User's Posts Section ---
+                  const Text(
+                    "User's Posts",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  const Divider(thickness: 1.5),
+                  _buildUserPostsList(),
+                ],
               ),
             ),
           );
@@ -243,45 +296,90 @@ class _ProfilePage2State extends State<ProfilePage2> {
     );
   }
 
-  Widget _buildCard({required Widget child}) {
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15.0),
-      ),
-      elevation: 8.0,
-      shadowColor: Colors.grey[400],
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: child,
+  // --- Reusable Widgets ---
+
+  Widget _buildStatCard(BuildContext context,
+      {required IconData icon,
+      required String label,
+      required String value,
+      required Color color}) {
+    return Expanded(
+      child: Card(
+        elevation: 2,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Icon(icon, size: 32, color: color),
+              const SizedBox(height: 8),
+              Text(value,
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(fontWeight: FontWeight.bold)),
+              Text(label, style: Theme.of(context).textTheme.bodySmall),
+            ],
+          ),
+        ),
       ),
     );
   }
 
-  Widget _buildNonEditableEmailField(
-      String label, String value, bool isVisible) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 16.0,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 8.0),
-        TextFormField(
-          enabled: false,
-          obscureText: isVisible,
-          initialValue: value,
-          decoration: InputDecoration(
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-          ),
-        ),
-        const SizedBox(height: 16.0),
-      ],
+  Widget _buildInfoBox(
+      {required IconData icon,
+      required String title,
+      required String subtitle,
+      Widget? trailing}) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 6),
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: ListTile(
+        leading: Icon(icon, size: 30, color: Colors.deepOrange),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+        subtitle: Text(subtitle, style: const TextStyle(fontSize: 16)),
+        trailing: trailing,
+      ),
+    );
+  }
+
+  Widget _buildUserPostsList() {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('posts')
+          .where('postmakerId', isEqualTo: widget.uid)
+          .orderBy('timestamp', descending: true)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return const Padding(
+            padding: EdgeInsets.all(20.0),
+            child: Center(child: Text("This user has not made any posts yet.")),
+          );
+        }
+
+        return ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: snapshot.data!.docs.length,
+          itemBuilder: (context, index) {
+            final postDoc = snapshot.data!.docs[index];
+            final postModel =
+                PostModel.fromJson(postDoc.data() as Map<String, dynamic>);
+
+            return PostCard(
+              post: postModel,
+              isOwner: false,
+              onDelete: () {},
+              onReport: () {},
+            );
+          },
+        );
+      },
     );
   }
 }

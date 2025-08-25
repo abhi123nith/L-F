@@ -1,0 +1,22 @@
+{
+    "sourceFile": "lib/newCode/Backend/validator.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1756115037316,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1756123057545,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,7 @@\n-// lib/Backend/validator.dart\n-class Validator {\n-  /// Checks if an email ends with a specific domain.\n-  static bool isValidCollegeEmail(String email, String domain) {\n-    return email.trim().endsWith(domain);\n-  }\n-}\n+// // lib/Backend/validator.dart\n+// class Validator {\n+//   /// Checks if an email ends with a specific domain.\n+//   static bool isValidCollegeEmail(String email, String domain) {\n+//     return email.trim().endsWith(domain);\n+//   }\n+// }\n"
+                }
+            ],
+            "date": 1756115037316,
+            "name": "Commit-0",
+            "content": "// lib/Backend/validator.dart\nclass Validator {\n  /// Checks if an email ends with a specific domain.\n  static bool isValidCollegeEmail(String email, String domain) {\n    return email.trim().endsWith(domain);\n  }\n}\n"
+        }
+    ]
+}

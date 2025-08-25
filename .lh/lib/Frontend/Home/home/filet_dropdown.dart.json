@@ -1,0 +1,18 @@
+{
+    "sourceFile": "lib/Frontend/Home/home/filet_dropdown.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1756124303409,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1756124303409,
+            "name": "Commit-0",
+            "content": "import 'package:flutter/material.dart';\nimport 'package:l_f/Frontend/Contants/lists.dart'; // Adjust this import\n\nclass FilterBar extends StatefulWidget {\n  final Function({String? type, String? location, String? category, String? dateRange}) onFilterChanged;\n\n  const FilterBar({super.key, required this.onFilterChanged});\n\n  @override\n  State<FilterBar> createState() => _FilterBarState();\n}\n\nclass _FilterBarState extends State<FilterBar> {\n  String selectedType = 'All';\n  String selectedLocation = 'Campus, NITH';\n  String selectedCategory = 'All';\n  String selectedDateRange = 'All Time';\n\n  final List<String> itemTypes = ['All', 'Lost', 'Found'];\n  final List<String> locations = locationsList;\n  final List<String> categories = ['All', 'Mobile Phone', 'Laptop', 'Other']; // Add your full list\n  final List<String> dateRanges = ['All Time', 'Today', 'This Week', 'This Month', 'This Year'];\n\n  @override\n  Widget build(BuildContext context) {\n    return SingleChildScrollView(\n      scrollDirection: Axis.horizontal,\n      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),\n      child: Row(\n        mainAxisAlignment: MainAxisAlignment.center,\n        children: [\n          _buildDropdown('Type', selectedType, itemTypes, (val) => widget.onFilterChanged(type: val)),\n          _buildDropdown('Location', selectedLocation, locations, (val) => widget.onFilterChanged(location: val)),\n          _buildDropdown('Category', selectedCategory, categories, (val) => widget.onFilterChanged(category: val)),\n          _buildDropdown('Date', selectedDateRange, dateRanges, (val) => widget.onFilterChanged(dateRange: val)),\n        ],\n      ),\n    );\n  }\n\n  Widget _buildDropdown(String hint, String value, List<String> items, ValueChanged<String?> onChanged) {\n    return Padding(\n      padding: const EdgeInsets.symmetric(horizontal: 8.0),\n      child: DropdownButtonHideUnderline(\n        child: DropdownButton<String>(\n          value: value,\n          hint: Text(hint),\n          items: items.map((String val) => DropdownMenuItem<String>(value: val, child: Text(val))).toList(),\n          onChanged: onChanged,\n        ),\n      ),\n    );\n  }\n}\n"
+        }
+    ]
+}

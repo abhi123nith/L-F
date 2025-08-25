@@ -36,23 +36,27 @@ class PostModel {
   });
 
   factory PostModel.fromJson(Map<String, dynamic> json) {
+    // The ?? operator provides a default value if the json field is null, preventing crashes.
     return PostModel(
+      // Nullable fields based on logic
       question: json['status'] == 'Found' ? json['question'] : null,
       isClaimed: json['status'] == 'Found' ? json['isClaimed'] : null,
       claimStatus: json['status'] == 'Found' ? json['claimStatus'] : null,
       postClaimer: json['status'] == 'Found' ? json['postClaimer'] : null,
-       postclaimerId: json['status'] == 'Found' ? json['postClaimer'] : null,
+      postclaimerId: json['status'] == 'Found' ? json['postClaimer'] : null,
       postClaimerPic: json['status'] == 'Found' ? json['postClaimerPic'] : null,
-      userName: json['userName'],
-      profileImageUrl: json['profileImageUrl'],
-      postTime: json['postTime'],
-      itemImages: List<String>.from(json['itemImages']),
-      status: json['status'],
-      title: json['title'],
-      location: json['location'],
-      description: json['description'],
-      postmakerId: json['postmakerId'],
-      postId: json['postId'],
+      
+      // Required fields with safe defaults
+      userName: json['userName'] ?? 'Unknown User',
+      profileImageUrl: json['profileImageUrl'] ?? '',
+      postTime: json['postTime'] ?? 'Unknown Date',
+      itemImages: List<String>.from(json['imageUrls'] ?? []), // Corrected field name and added default
+      status: json['status'] ?? 'Unknown',
+      title: json['item'] ?? 'Untitled', // Corrected from 'title' to match your DB schema
+      location: json['location'] ?? 'Unknown Location',
+      description: json['description'] ?? 'No description.',
+      postmakerId: json['postmakerId'] ?? '',
+      postId: json['postId'] ?? '',
     );
   }
 }

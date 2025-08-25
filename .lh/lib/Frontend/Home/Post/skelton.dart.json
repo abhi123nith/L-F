@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 7,
+            "activePatchIndex": 9,
             "patches": [
                 {
                     "date": 1747558604567,
@@ -36,6 +36,14 @@
                 {
                     "date": 1747559059097,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,10 +2,10 @@\n import 'package:shimmer/shimmer.dart';\n \n class ShimmerSkeleton extends StatelessWidget {\n   const ShimmerSkeleton({\n-    Key? key,\n-  }) : super(key: key);\n+    super.key,\n+  });\n \n   @override\n   Widget build(BuildContext context) {\n     return Shimmer.fromColors(\n"
+                },
+                {
+                    "date": 1756119044693,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,24 +1,24 @@\n-import 'package:flutter/material.dart';\n-import 'package:shimmer/shimmer.dart';\n+// import 'package:flutter/material.dart';\n+// import 'package:shimmer/shimmer.dart';\n \n-class ShimmerSkeleton extends StatelessWidget {\n-  const ShimmerSkeleton({\n-    super.key,\n-  });\n+// class ShimmerSkeleton extends StatelessWidget {\n+//   const ShimmerSkeleton({\n+//     super.key,\n+//   });\n \n-  @override\n-  Widget build(BuildContext context) {\n-    return Shimmer.fromColors(\n-      baseColor: Colors.grey[300]!,\n-      highlightColor: Colors.grey[100]!,\n-      child: Container(\n-        height: 80,\n-        width: MediaQuery.of(context).size.width*0.8,\n-        decoration: BoxDecoration(\n-          color: Colors.grey[300],\n-          // borderRadius: borderRadius,\n-        ),\n-      ),\n-    );\n-  }\n-}\n+//   @override\n+//   Widget build(BuildContext context) {\n+//     return Shimmer.fromColors(\n+//       baseColor: Colors.grey[300]!,\n+//       highlightColor: Colors.grey[100]!,\n+//       child: Container(\n+//         height: 80,\n+//         width: MediaQuery.of(context).size.width*0.8,\n+//         decoration: BoxDecoration(\n+//           color: Colors.grey[300],\n+//           // borderRadius: borderRadius,\n+//         ),\n+//       ),\n+//     );\n+//   }\n+// }\n"
+                },
+                {
+                    "date": 1756122883550,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,24 +1,24 @@\n-// import 'package:flutter/material.dart';\n-// import 'package:shimmer/shimmer.dart';\n+import 'package:flutter/material.dart';\n+import 'package:shimmer/shimmer.dart';\n \n-// class ShimmerSkeleton extends StatelessWidget {\n-//   const ShimmerSkeleton({\n-//     super.key,\n-//   });\n+class ShimmerSkeleton extends StatelessWidget {\n+  const ShimmerSkeleton({\n+    super.key,\n+  });\n \n-//   @override\n-//   Widget build(BuildContext context) {\n-//     return Shimmer.fromColors(\n-//       baseColor: Colors.grey[300]!,\n-//       highlightColor: Colors.grey[100]!,\n-//       child: Container(\n-//         height: 80,\n-//         width: MediaQuery.of(context).size.width*0.8,\n-//         decoration: BoxDecoration(\n-//           color: Colors.grey[300],\n-//           // borderRadius: borderRadius,\n-//         ),\n-//       ),\n-//     );\n-//   }\n-// }\n+  @override\n+  Widget build(BuildContext context) {\n+    return Shimmer.fromColors(\n+      baseColor: Colors.grey[300]!,\n+      highlightColor: Colors.grey[100]!,\n+      child: Container(\n+        height: 80,\n+        width: MediaQuery.of(context).size.width*0.8,\n+        decoration: BoxDecoration(\n+          color: Colors.grey[300],\n+          // borderRadius: borderRadius,\n+        ),\n+      ),\n+    );\n+  }\n+}\n"
                 }
             ],
             "date": 1747558604566,

@@ -1,0 +1,22 @@
+{
+    "sourceFile": "lib/Frontend/Home/functions.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1756118691803,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1756122823438,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,20 +1,20 @@\n-// import 'package:cloud_firestore/cloud_firestore.dart';\n-// import 'package:flutter/material.dart';\n+import 'package:cloud_firestore/cloud_firestore.dart';\n+import 'package:flutter/material.dart';\n \n-// Future<void> _deletePost(BuildContext context, String postId) async {\n-//     try {\n-//       await FirebaseFirestore.instance.collection('posts').doc(postId).delete();\n-//       ScaffoldMessenger.of(context).showSnackBar(\n-//         const SnackBar(\n-//           content: Text('Post deleted successfully'),\n-//           behavior: SnackBarBehavior.floating,\n-//           margin: EdgeInsets.all(16.0),\n-//           duration: Duration(seconds: 2),\n-//         ),\n-//       );\n-//     } catch (e) {\n-//       ScaffoldMessenger.of(context).showSnackBar(\n-//         SnackBar(content: Text('Failed to delete post: $e')),\n-//       );\n\\ No newline at end of file\n-//     }\n-//   }\n+Future<void> _deletePost(BuildContext context, String postId) async {\n+    try {\n+      await FirebaseFirestore.instance.collection('posts').doc(postId).delete();\n+      ScaffoldMessenger.of(context).showSnackBar(\n+        const SnackBar(\n+          content: Text('Post deleted successfully'),\n+          behavior: SnackBarBehavior.floating,\n+          margin: EdgeInsets.all(16.0),\n+          duration: Duration(seconds: 2),\n+        ),\n+      );\n+    } catch (e) {\n+      ScaffoldMessenger.of(context).showSnackBar(\n+        SnackBar(content: Text('Failed to delete post: $e')),\n+      );\n+    }\n+  }\n\\ No newline at end of file\n"
+                }
+            ],
+            "date": 1756118691803,
+            "name": "Commit-0",
+            "content": "// import 'package:cloud_firestore/cloud_firestore.dart';\n// import 'package:flutter/material.dart';\n\n// Future<void> _deletePost(BuildContext context, String postId) async {\n//     try {\n//       await FirebaseFirestore.instance.collection('posts').doc(postId).delete();\n//       ScaffoldMessenger.of(context).showSnackBar(\n//         const SnackBar(\n//           content: Text('Post deleted successfully'),\n//           behavior: SnackBarBehavior.floating,\n//           margin: EdgeInsets.all(16.0),\n//           duration: Duration(seconds: 2),\n//         ),\n//       );\n//     } catch (e) {\n//       ScaffoldMessenger.of(context).showSnackBar(\n//         SnackBar(content: Text('Failed to delete post: $e')),\n//       );\n//     }\n//   }"
+        }
+    ]
+}

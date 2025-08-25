@@ -1,0 +1,18 @@
+{
+    "sourceFile": "lib/Frontend/Home/Post/post_detail_page.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1756122858819,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1756122858819,
+            "name": "Commit-0",
+            "content": "import 'package:cloud_firestore/cloud_firestore.dart';\nimport 'package:flutter/material.dart';\n\nclass PostDetailPage extends StatelessWidget {\n  final String postId;\n\n  const PostDetailPage({super.key, required this.postId});\n\n  @override\n  Widget build(BuildContext context) {\n    return Scaffold(\n      appBar: AppBar(\n        title: const Text('Post Details'),\n      ),\n      body: FutureBuilder<DocumentSnapshot>(\n        future: FirebaseFirestore.instance.collection('posts').doc(postId).get(),\n        builder: (context, snapshot) {\n          if (!snapshot.hasData) {\n            return const Center(child: CircularProgressIndicator());\n          }\n\n          var post = snapshot.data!;\n          var postTitle = post['item'];\n          var postDescription = post['description'];\n\n          return Padding(\n            padding: const EdgeInsets.all(16.0),\n            child: Column(\n              crossAxisAlignment: CrossAxisAlignment.start,\n              children: [\n                Text(\n                  postTitle,\n                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),\n                ),\n                const SizedBox(height: 8),\n                Text(\n                  postDescription,\n                  style: const TextStyle(fontSize: 16),\n                ),\n              ],\n            ),\n          );\n        },\n      ),\n    );\n  }\n}\n"
+        }
+    ]
+}

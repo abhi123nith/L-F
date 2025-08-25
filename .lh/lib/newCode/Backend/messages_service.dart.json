@@ -1,0 +1,22 @@
+{
+    "sourceFile": "lib/newCode/Backend/messages_service.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1756117793822,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1756123062937,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,34 +1,34 @@\n-// lib/Backend/messages_service.dart\n-import 'package:cloud_firestore/cloud_firestore.dart';\n-import 'package:firebase_auth/firebase_auth.dart';\n+// // lib/Backend/messages_service.dart\n+// import 'package:cloud_firestore/cloud_firestore.dart';\n+// import 'package:firebase_auth/firebase_auth.dart';\n \n-class MessagesService {\n-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;\n-  final User? currentUser = FirebaseAuth.instance.currentUser;\n+// class MessagesService {\n+//   final FirebaseFirestore _firestore = FirebaseFirestore.instance;\n+//   final User? currentUser = FirebaseAuth.instance.currentUser;\n \n-  /// Fetches a stream of the latest messages for the current user.\n-  Stream<QuerySnapshot> getLatestMessages() {\n-    return _firestore\n-        .collection('chats')\n-        .where('participants', arrayContains: currentUser!.uid)\n-        .orderBy('timestamp', descending: true)\n-        .snapshots();\n-  }\n+//   /// Fetches a stream of the latest messages for the current user.\n+//   Stream<QuerySnapshot> getLatestMessages() {\n+//     return _firestore\n+//         .collection('chats')\n+//         .where('participants', arrayContains: currentUser!.uid)\n+//         .orderBy('timestamp', descending: true)\n+//         .snapshots();\n+//   }\n \n-  /// Sends a new message in a chat.\n-  Future<void> sendMessage({\n-    required String receiverId,\n-    required String message,\n-    required String postId,\n-  }) async {\n-    if (currentUser == null) return;\n-    await _firestore.collection('chats').add({\n-      'senderId': currentUser!.uid,\n-      'receiverId': receiverId,\n-      'participants': [currentUser!.uid, receiverId],\n-      'message': message,\n-      'postId': postId,\n-      'timestamp': Timestamp.now(),\n-    });\n-  }\n-}\n+//   /// Sends a new message in a chat.\n+//   Future<void> sendMessage({\n+//     required String receiverId,\n+//     required String message,\n+//     required String postId,\n+//   }) async {\n+//     if (currentUser == null) return;\n+//     await _firestore.collection('chats').add({\n+//       'senderId': currentUser!.uid,\n+//       'receiverId': receiverId,\n+//       'participants': [currentUser!.uid, receiverId],\n+//       'message': message,\n+//       'postId': postId,\n+//       'timestamp': Timestamp.now(),\n+//     });\n+//   }\n+// }\n"
+                }
+            ],
+            "date": 1756117793822,
+            "name": "Commit-0",
+            "content": "// lib/Backend/messages_service.dart\nimport 'package:cloud_firestore/cloud_firestore.dart';\nimport 'package:firebase_auth/firebase_auth.dart';\n\nclass MessagesService {\n  final FirebaseFirestore _firestore = FirebaseFirestore.instance;\n  final User? currentUser = FirebaseAuth.instance.currentUser;\n\n  /// Fetches a stream of the latest messages for the current user.\n  Stream<QuerySnapshot> getLatestMessages() {\n    return _firestore\n        .collection('chats')\n        .where('participants', arrayContains: currentUser!.uid)\n        .orderBy('timestamp', descending: true)\n        .snapshots();\n  }\n\n  /// Sends a new message in a chat.\n  Future<void> sendMessage({\n    required String receiverId,\n    required String message,\n    required String postId,\n  }) async {\n    if (currentUser == null) return;\n    await _firestore.collection('chats').add({\n      'senderId': currentUser!.uid,\n      'receiverId': receiverId,\n      'participants': [currentUser!.uid, receiverId],\n      'message': message,\n      'postId': postId,\n      'timestamp': Timestamp.now(),\n    });\n  }\n}\n"
+        }
+    ]
+}

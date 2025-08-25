@@ -28,6 +28,30 @@ class _MessagesPageState extends State<MessagesPage>
     super.dispose();
   }
 
+  Route _createSmoothRoute(Widget page) {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => page,
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = Offset(0.0, 0.1);
+        const end = Offset.zero;
+        const curve = Curves.easeOut;
+
+        var tween =
+            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+        var slideAnimation = animation.drive(tween);
+
+        return FadeTransition(
+          opacity: animation,
+          child: SlideTransition(
+            position: slideAnimation,
+            child: child,
+          ),
+        );
+      },
+      transitionDuration: const Duration(milliseconds: 400),
+    );
+  }
+
   // Fetch user profile (name and profile image)
   Future<Map<String, dynamic>?> _fetchUserProfile(String uid) async {
     try {
@@ -197,9 +221,18 @@ class _MessagesPageState extends State<MessagesPage>
                             onTap: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
+                                PageRouteBuilder(
+                                  transitionDuration:
+                                      const Duration(milliseconds: 500),
+                                  pageBuilder: (_, __, ___) =>
                                       ChatDetailPage(otherUserId: otherUserId),
+                                  transitionsBuilder: (context, animation,
+                                      secondaryAnimation, child) {
+                                    return FadeTransition(
+                                      opacity: animation,
+                                      child: child,
+                                    );
+                                  },
                                 ),
                               );
                             },
@@ -282,8 +315,7 @@ class _MessagesPageState extends State<MessagesPage>
               builder: (context, claimSnapshot) {
                 if (!claimSnapshot.hasData) {
                   return const Center(
-                      child: SizedBox(
-                          child: Center(child: ShimmerSkeleton())));
+                      child: SizedBox(child: Center(child: ShimmerSkeleton())));
                 }
 
                 if (claimSnapshot.hasError) {
@@ -304,10 +336,21 @@ class _MessagesPageState extends State<MessagesPage>
                       onTap: () {
                         print('Status: $claimStatus');
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) =>
-                                    PostDetailsPage(postId: postId)));
+                          context,
+                          PageRouteBuilder(
+                            transitionDuration:
+                                const Duration(milliseconds: 500),
+                            pageBuilder: (_, __, ___) =>
+                                PostDetailsPage(postId: postId),
+                            transitionsBuilder: (context, animation,
+                                secondaryAnimation, child) {
+                              return FadeTransition(
+                                opacity: animation,
+                                child: child,
+                              );
+                            },
+                          ),
+                        );
                       },
                       child: SizedBox(
                         width:
@@ -457,10 +500,21 @@ class _MessagesPageState extends State<MessagesPage>
                         return GestureDetector(
                           onTap: () {
                             Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) =>
-                                        PostDetailsPage(postId: postId)));
+                              context,
+                              PageRouteBuilder(
+                                transitionDuration:
+                                    const Duration(milliseconds: 500),
+                                pageBuilder: (_, __, ___) =>
+                                    PostDetailsPage(postId: postId),
+                                transitionsBuilder: (context, animation,
+                                    secondaryAnimation, child) {
+                                  return FadeTransition(
+                                    opacity: animation,
+                                    child: child,
+                                  );
+                                },
+                              ),
+                            );
                           },
                           child: SizedBox(
                             width: isMobile
@@ -522,8 +576,10 @@ class _MessagesPageState extends State<MessagesPage>
                                                         onPressed: () {
                                                           print(
                                                               "Sender ID: $senderId");
-                                                          ProfilePage2(
-                                                              uid: senderId);
+                                                          Navigator.of(context).push(
+                                                              _createSmoothRoute(
+                                                                  ProfilePage2(
+                                                                      uid: senderId)));
                                                         },
                                                         child: Text(
                                                           '$claimerName',

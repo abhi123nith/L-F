@@ -1,0 +1,18 @@
+{
+    "sourceFile": "lib/newCode/models/post_model.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1756116295024,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1756116295024,
+            "name": "Commit-0",
+            "content": "// lib/models/post_model.dart\nimport 'package:cloud_firestore/cloud_firestore.dart';\n\n/// A data model for a Lost and Found post.\nclass PostModel {\n  final String postId;\n  final String postmakerId;\n  final String userName;\n  final String profileImageUrl;\n  final String status;\n  final String title;\n  final String location;\n  final String description;\n  final List<String> itemImages;\n  final String postTime;\n  final String? question;\n  final bool isClaimed;\n  final String? postClaimerId;\n  final String? postClaimerName;\n  final String? postClaimerPic;\n\n  PostModel({\n    required this.postId,\n    required this.postmakerId,\n    required this.userName,\n    required this.profileImageUrl,\n    required this.status,\n    required this.title,\n    required this.location,\n    required this.description,\n    required this.itemImages,\n    required this.postTime,\n    this.question,\n    this.isClaimed = false,\n    this.postClaimerId,\n    this.postClaimerName,\n    this.postClaimerPic,\n  });\n\n  factory PostModel.fromFirestore(DocumentSnapshot doc, Map<String, String> userDetails) {\n    final data = doc.data() as Map<String, dynamic>;\n    return PostModel(\n      postId: doc.id,\n      postmakerId: data['postmakerId'] as String,\n      userName: userDetails['name']!,\n      profileImageUrl: userDetails['profileImage']!,\n      status: data['status'] ?? '',\n      title: data['item'] ?? '',\n      location: data['location'] ?? '',\n      description: data['description'] ?? '',\n      itemImages: List<String>.from(data['imageUrls'] ?? []),\n      postTime: _formatDate(data['timestamp'] as Timestamp?),\n      question: data['question'] as String?,\n      isClaimed: data['isClaimed'] ?? false,\n      postClaimerId: data['postClaimer'] as String?,\n      postClaimerName: data['postClaimerName'] as String?,\n      postClaimerPic: data['postClaimerPic'] as String?,\n    );\n  }\n}\n\nString _formatDate(Timestamp? timestamp) {\n  if (timestamp == null) return 'Not available';\n  DateTime date = timestamp.toDate();\n  return DateFormat('dd MMMM yyyy').format(date);\n}\n"
+        }
+    ]
+}
