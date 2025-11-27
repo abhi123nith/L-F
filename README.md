@@ -20,7 +20,7 @@ For detailed documentation, please see:
 ## 📱 Features
 
 ### Core Functionality
-- **AI-Powered Post Creation**: Automatically extract item details from user descriptions using Gemini AI
+- **AI-Powered Post Creation**: Automatically extract item details from user descriptions using AI
 - **Lost/Found Item Reporting**: Simple interface to report lost or found items
 - **Smart Categorization**: Automatic categorization of items with predefined lists
 - **Location-Based Filtering**: Search items based on specific locations within NITH campus
@@ -50,7 +50,6 @@ For detailed documentation, please see:
 
 ### AI Integration
 - **Google Gemini AI**: Natural language processing for automatic post creation
-- **Image Recognition**: (Future implementation) AI-powered image analysis
 
 ### Deployment
 - **Netlify**: Web hosting platform
@@ -80,8 +79,8 @@ For detailed documentation, please see:
 - Flutter SDK (3.0 or higher)
 - Dart SDK
 - Firebase account
-- Android Studio / Xcode (for mobile development)
-- Node.js (for Firebase functions)
+- Android Studio / Xcode/ VsCode (for mobile development)
+
 
 ### Setup Instructions
 
@@ -182,14 +181,13 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- NITH administration for supporting the project
 - Google Gemini AI for powering the smart post creation
 - Flutter community for the amazing framework
 - Firebase for reliable backend services
 
 ## 📞 Support
 
-For support, email [your-email@example.com] or create an issue in the GitHub repository.
+For support, email [abhishekgodara202226@example.com] or create an issue in the GitHub repository.
 
 ## 🔄 Updates
 
