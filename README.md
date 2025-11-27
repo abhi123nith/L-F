@@ -62,7 +62,6 @@ For detailed documentation, please see:
 *Main dashboard showing lost and found items*
 
 ### AI-Powered Post Creation
-![AI Post Creation](assets/logo2.png)
 *Smart form that automatically fills details using AI*
 
 ### Item Details
