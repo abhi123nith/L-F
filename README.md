@@ -183,7 +183,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - Google Gemini AI for powering the smart post creation
 - Flutter community for the amazing framework
-- Firebase for reliable backend services<img width="367" height="377" alt="Screenshot 2025-11-23 223637" src="https://github.com/user-attachments/assets/e19ff809-e0a5-4baf-a663-4ff0742355a6" />
+- Firebase for reliable backend services
 <img width="1920" height="1080" alt="Screenshot (33)" src="https://github.com/user-attachments/assets/c9f05ccc-66fa-42c1-9f08-7fad547d67ed" />
 <img width="1913" height="978" alt="Screenshot 2025-11-28 002550" src="https://github.com/user-attachments/assets/9f91deec-0859-4bd6-a882-87c0974751da" />
 <img width="1919" height="973" alt="Screenshot 2025-11-28 002612" src="https://github.com/user-attachments/assets/2d93243e-aa5d-49cd-a5b0-70d3026e9cf1" />
