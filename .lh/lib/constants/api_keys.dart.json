@@ -1,0 +1,18 @@
+{
+    "sourceFile": "lib/constants/api_keys.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1764240881835,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1764240881835,
+            "name": "Commit-0",
+            "content": "// lib/constants/api_keys.dart\n// Constants for API keys used in the application\n\n// Note: In a production app, you should use secure methods to store API keys\n// For development purposes, you can add your Gemini API key here\nconst String geminiApiKey = 'YOUR_GEMINI_API_KEY_HERE';"
+        }
+    ]
+}

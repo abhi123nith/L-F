@@ -2,9 +2,11 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:l_f/Frontend/Home/Post/post_model.dart';
 import 'package:l_f/Frontend/Profile/user_see_page.dart';
+import 'package:share_plus/share_plus.dart';
 
 class MyPostsPage extends StatefulWidget {
   const MyPostsPage({super.key});
@@ -107,8 +109,7 @@ class _MyPostsPageState extends State<MyPostsPage> {
                 userName: userDetails['name'] ?? 'NITH User',
                 profileImageUrl: userDetails['profileImage'] ?? '',
                 postTime: _formatDate(data['timestamp']),
-                itemImages: List<String>.from(
-                    data['imageUrls'] ?? ['']),
+                itemImages: List<String>.from(data['imageUrls'] ?? ['']),
                 status: data['status'] ?? '',
                 title: data['item'] ?? '',
                 location: data['location'] ?? '',
@@ -340,7 +341,7 @@ class _MyPostsPageState extends State<MyPostsPage> {
                                         GestureDetector(
                                           onTap: () {
                                             _sharePost(context, post.title,
-                                                post.description);
+                                                post.description, post.postId);
                                           },
                                           child: const Row(
                                             children: [
@@ -370,10 +371,36 @@ class _MyPostsPageState extends State<MyPostsPage> {
     );
   }
 
-  void _sharePost(BuildContext context, String title, String description) {
-    final content = 'Check out this post: $title\nDescription: $description';
-    final snackBar = SnackBar(content: Text('Shared! $content'));
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  void _sharePost(BuildContext context, String title, String description,
+      [String? postId]) async {
+    final postLink = postId != null
+        ? 'https://nithlostandfoundweb.netlify.app/post/$postId'
+        : '';
+    final content = postId != null
+        ? 'Check out this post: $title\nDescription: $description\n\nLink: $postLink\n\nShared from Lost & Found NITH app'
+        : 'Check out this post: $title\nDescription: $description\n\nShared from Lost & Found NITH app';
+
+    try {
+      // Share the content with link
+      await Share.share(content);
+
+      // Show a success snackbar
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Post shared successfully!')),
+      );
+    } catch (e) {
+      print('Error sharing post: $e');
+
+      // Fallback for web or platforms where share is not supported
+      await Clipboard.setData(ClipboardData(text: content));
+
+      // Show a snackbar with fallback message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text(
+                'Link copied to clipboard! You can now share it manually.')),
+      );
+    }
   }
 
   void _showDeleteConfirmation(BuildContext context, PostModel post) {

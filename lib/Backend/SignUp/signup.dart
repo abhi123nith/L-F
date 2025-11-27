@@ -475,7 +475,6 @@ class _SignUpPageState extends State<SignUpPage> {
 
 class _buildTextFormField extends StatelessWidget {
   const _buildTextFormField({
-    super.key,
     required TextEditingController emailController,
   }) : _emailController = emailController;
 

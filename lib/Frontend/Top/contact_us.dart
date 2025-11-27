@@ -1,6 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 class ContactUsPage extends StatefulWidget {
   const ContactUsPage({super.key});
@@ -32,7 +33,7 @@ class _ContactUsPageState extends State<ContactUsPage> {
     // ----------------------------------------------------
 
     final url = Uri.parse('https://api.emailjs.com/api/v1.0/email/send');
-    
+
     try {
       final response = await http.post(
         url,
@@ -101,7 +102,8 @@ class _ContactUsPageState extends State<ContactUsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Icon(Icons.email_outlined, size: 80, color: Colors.deepOrange),
+                  const Icon(Icons.email_outlined,
+                      size: 80, color: Colors.deepOrange),
                   const SizedBox(height: 24),
                   const Text(
                     "Get in Touch",
@@ -117,22 +119,29 @@ class _ContactUsPageState extends State<ContactUsPage> {
                   const SizedBox(height: 32),
                   TextFormField(
                     controller: _nameController,
-                    decoration: const InputDecoration(labelText: 'Your Name', border: OutlineInputBorder()),
-                    validator: (value) => value!.isEmpty ? 'Please enter your name' : null,
+                    decoration: const InputDecoration(
+                        labelText: 'Your Name', border: OutlineInputBorder()),
+                    validator: (value) =>
+                        value!.isEmpty ? 'Please enter your name' : null,
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _emailController,
-                    decoration: const InputDecoration(labelText: 'Your Email', border: OutlineInputBorder()),
+                    decoration: const InputDecoration(
+                        labelText: 'Your Email', border: OutlineInputBorder()),
                     keyboardType: TextInputType.emailAddress,
-                    validator: (value) => value!.isEmpty || !value.contains('@') ? 'Please enter a valid email' : null,
+                    validator: (value) => value!.isEmpty || !value.contains('@')
+                        ? 'Please enter a valid email'
+                        : null,
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _messageController,
-                    decoration: const InputDecoration(labelText: 'Message', border: OutlineInputBorder()),
+                    decoration: const InputDecoration(
+                        labelText: 'Message', border: OutlineInputBorder()),
                     maxLines: 5,
-                    validator: (value) => value!.isEmpty ? 'Please enter your message' : null,
+                    validator: (value) =>
+                        value!.isEmpty ? 'Please enter your message' : null,
                   ),
                   const SizedBox(height: 24),
                   ElevatedButton(
@@ -141,7 +150,8 @@ class _ContactUsPageState extends State<ContactUsPage> {
                       backgroundColor: Colors.deepOrange,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 16),
-                      textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      textStyle: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     child: _isSending
                         ? const CircularProgressIndicator(color: Colors.white)
