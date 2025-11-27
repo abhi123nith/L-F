@@ -10,6 +10,13 @@ A comprehensive Lost & Found application for National Institute of Technology, H
 
 Check out the live application: [https://nithlostandfoundweb.netlify.app](https://nithlostandfoundweb.netlify.app)
 
+## 📚 Documentation
+
+For detailed documentation, please see:
+- [Main Documentation](docs/README.md)
+- [API Keys Setup Guide](docs/API_KEYS.md)
+- [Installation Guide](docs/INSTALLATION.md)
+
 ## 📱 Features
 
 ### Core Functionality
@@ -96,16 +103,35 @@ Check out the live application: [https://nithlostandfoundweb.netlify.app](https:
    - Enable Firestore, Authentication, and Storage in Firebase
 
 4. **API Keys Setup**
-   - Create a `lib/constants/api_keys.dart` file
-   - Add your Gemini AI API key:
-   ```dart
-   const String geminiApiKey = 'YOUR_GEMINI_API_KEY_HERE';
+   - Copy the API keys template file:
+   ```bash
+   cp lib/constants/api_keys_template.dart lib/constants/api_keys.dart
    ```
+   - Edit `lib/constants/api_keys.dart` and replace the placeholders with your actual API keys:
+   ```dart
+   const String geminiApiKey = 'YOUR_ACTUAL_GEMINI_API_KEY';
+   const String stabilityApikey = 'YOUR_ACTUAL_STABILITY_AI_API_KEY'; // Optional
+   ```
+   - **Important**: The `api_keys.dart` file is excluded from version control for security reasons
 
 5. **Run the application**
    ```bash
    flutter run
    ```
+
+## 🔐 Security Best Practices
+
+### API Key Management
+- **Never commit API keys** to version control systems
+- Use environment variables or secure configuration files
+- Regularly rotate API keys
+- Monitor API usage for unusual activity
+- Use separate API keys for development and production
+
+### Data Protection
+- All user data is encrypted in transit and at rest
+- Firebase Security Rules protect unauthorized access
+- User authentication is required for sensitive operations
 
 ## 📱 Usage
 
