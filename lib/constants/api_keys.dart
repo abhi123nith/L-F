@@ -1,2 +1,2 @@
-const String geminiApiKey = 'AIzaSyAvEDVHsomhAqxPxbBtcSzHLtOK2CsCc0c';
-const String stabilityApikey = 'sk-ywiaFEEKqGpY7OPdrc4JmC9NIPFIL4RQZUvfkN7DGclbdaKT';
+const String geminiApiKey = 'YOUR_GEMINI_AI_API_KEY';
+const String stabilityApikey = 'YOUR_KEY_Stability_API';
